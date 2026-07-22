@@ -53,6 +53,7 @@
   }
 
   function updateHead() {
+    if (document.body.hasAttribute('data-static-pillar')) return; // static pillar pages already ship correct title/description/canonical/JSON-LD
     const breadcrumbEl = document.querySelector('[data-browse-breadcrumb]');
     const path = activeCategory === 'all' ? '/calculators' : `/calculators/${activeCategory}`;
     setCanonical(`https://procalculator.site${path}`);
