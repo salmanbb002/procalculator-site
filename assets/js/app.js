@@ -60,7 +60,7 @@
         return;
       }
       resultsBox.innerHTML = list.slice(0, 12).map(t => `
-        <a class="search-result-item" href="calculator.html?tool=${t.id}">
+        <a class="search-result-item" href="/calculator/${t.id}">
           <span class="emoji">${t.icon}</span>
           <span class="meta"><strong>${t.title}</strong><span>${getCategoryById(t.category).label}${t.functional ? '' : ' · Coming soon'}</span></span>
         </a>`).join('');
@@ -89,9 +89,9 @@
 
   document.querySelectorAll('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
 
-  const path = location.pathname.split('/').pop() || 'index.html';
+  const path = location.pathname.replace(/\/$/, '') || '/';
   document.querySelectorAll('.main-nav a, .mobile-drawer a').forEach(a => {
-    const href = a.getAttribute('href');
+    const href = a.getAttribute('href').replace(/\/$/, '') || '/';
     if (href === path) a.classList.add('active');
   });
 })();
