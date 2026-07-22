@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 260" role="img" aria-label="Diagram showing net price plus VAT equals gross price">
+  <rect width="800" height="260" rx="16" fill="#f4f7fa"/>
+
+  <g transform="translate(40,80)">
+    <rect width="180" height="100" rx="12" fill="#ffffff" stroke="#e8e8e8" stroke-width="2"/>
+    <text x="90" y="45" text-anchor="middle" font-family="'Inter',sans-serif" font-size="15" fill="#5d6d7e">Net price</text>
+    <text x="90" y="76" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="24" font-weight="700" fill="#0f172a">£100.00</text>
+  </g>
+
+  <text x="270" y="140" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="30" font-weight="700" fill="#045cb4">+</text>
+
+  <g transform="translate(310,80)">
+    <rect width="180" height="100" rx="12" fill="#eaf2fb" stroke="#045cb4" stroke-width="2"/>
+    <text x="90" y="45" text-anchor="middle" font-family="'Inter',sans-serif" font-size="15" fill="#045cb4">VAT</text>
+    <text x="90" y="76" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="24" font-weight="700" fill="#045cb4">£20.00</text>
+  </g>
+
+  <text x="540" y="140" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="30" font-weight="700" fill="#764ba2">=</text>
+
+  <g transform="translate(580,80)">
+    <rect width="180" height="100" rx="12" fill="url(#gvat)" />
+    <defs>
+      <linearGradient id="gvat" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#667eea"/>
+        <stop offset="100%" stop-color="#764ba2"/>
+      </linearGradient>
+    </defs>
+    <text x="90" y="45" text-anchor="middle" font-family="'Inter',sans-serif" font-size="15" fill="#ffffff" opacity="0.9">Gross price</text>
+    <text x="90" y="76" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="24" font-weight="700" fill="#ffffff">£120.00</text>
+  </g>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-label="Diagram showing length, width and depth multiplied together to find concrete volume">
+  <rect width="800" height="320" rx="16" fill="#f4f7fa"/>
+
+  <!-- 3D-ish prism -->
+  <g transform="translate(260,60)">
+    <polygon points="0,140 220,140 280,90 60,90" fill="#c7d6ea"/>
+    <polygon points="0,140 0,220 220,220 220,140" fill="#eaf2fb"/>
+    <polygon points="220,140 280,90 280,170 220,220" fill="#dbe6f5"/>
+
+    <!-- width arrow (front bottom) -->
+    <line x1="0" y1="240" x2="220" y2="240" stroke="#045cb4" stroke-width="3"/>
+    <polygon points="0,240 10,235 10,245" fill="#045cb4"/>
+    <polygon points="220,240 210,235 210,245" fill="#045cb4"/>
+    <text x="110" y="262" text-anchor="middle" font-family="'Inter',sans-serif" font-size="15" font-weight="700" fill="#045cb4">Width</text>
+
+    <!-- depth arrow (right side) -->
+    <line x1="250" y1="130" x2="250" y2="210" stroke="#764ba2" stroke-width="3"/>
+    <polygon points="250,130 245,140 255,140" fill="#764ba2"/>
+    <polygon points="250,210 245,200 255,200" fill="#764ba2"/>
+    <text x="290" y="175" text-anchor="middle" font-family="'Inter',sans-serif" font-size="15" font-weight="700" fill="#764ba2" transform="rotate(90 290 175)">Depth</text>
+
+    <!-- length arrow (top diagonal) -->
+    <line x1="30" y1="105" x2="255" y2="105" stroke="#667eea" stroke-width="3" transform="translate(0,-25) skewX(-18)"/>
+    <text x="150" y="55" text-anchor="middle" font-family="'Inter',sans-serif" font-size="15" font-weight="700" fill="#667eea">Length</text>
+  </g>
+
+  <text x="400" y="300" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="17" font-weight="700" fill="#0f172a">Length × Width × Depth = Volume (m³)</text>
+</svg>

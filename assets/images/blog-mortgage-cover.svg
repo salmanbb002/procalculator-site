@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" role="img" aria-label="Illustration of a house with a mortgage interest rate badge">
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#045cb4"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+    <linearGradient id="roof1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e8ecf5"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg1)"/>
+  <circle cx="70" cy="60" r="120" fill="#ffffff" opacity="0.07"/>
+  <circle cx="740" cy="350" r="160" fill="#ffffff" opacity="0.07"/>
+  <circle cx="700" cy="70" r="46" fill="#ffffff" opacity="0.1"/>
+
+  <!-- ground shadow -->
+  <ellipse cx="400" cy="330" rx="150" ry="16" fill="#000000" opacity="0.12"/>
+
+  <!-- house body -->
+  <rect x="300" y="210" width="200" height="120" rx="6" fill="#ffffff"/>
+  <polygon points="280,215 400,130 520,215" fill="url(#roof1)"/>
+  <rect x="292" y="205" width="216" height="16" rx="4" fill="#d7deea"/>
+
+  <!-- door -->
+  <rect x="378" y="270" width="44" height="60" rx="4" fill="#045cb4"/>
+  <circle cx="410" cy="300" r="2.5" fill="#ffffff"/>
+
+  <!-- windows -->
+  <rect x="322" y="240" width="34" height="34" rx="4" fill="#eaf2fb" stroke="#c7d6ea" stroke-width="2"/>
+  <rect x="444" y="240" width="34" height="34" rx="4" fill="#eaf2fb" stroke="#c7d6ea" stroke-width="2"/>
+  <line x1="339" y1="240" x2="339" y2="274" stroke="#c7d6ea" stroke-width="2"/>
+  <line x1="322" y1="257" x2="356" y2="257" stroke="#c7d6ea" stroke-width="2"/>
+  <line x1="461" y1="240" x2="461" y2="274" stroke="#c7d6ea" stroke-width="2"/>
+  <line x1="444" y1="257" x2="478" y2="257" stroke="#c7d6ea" stroke-width="2"/>
+
+  <!-- chimney -->
+  <rect x="460" y="150" width="22" height="46" fill="#e8ecf5"/>
+
+  <!-- rate badge -->
+  <circle cx="560" cy="180" r="46" fill="#ffffff"/>
+  <circle cx="560" cy="180" r="46" fill="none" stroke="#764ba2" stroke-width="4"/>
+  <text x="560" y="192" font-family="'Outfit',sans-serif" font-size="34" font-weight="700" fill="#764ba2" text-anchor="middle">%</text>
+
+  <!-- small trend line -->
+  <polyline points="220,300 250,280 275,290 300,255" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+  <circle cx="300" cy="255" r="6" fill="#ffffff"/>
+</svg>

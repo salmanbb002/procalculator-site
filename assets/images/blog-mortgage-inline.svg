@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-label="Bar chart comparing fixed, tracker and standard variable mortgage rate types">
+  <defs>
+    <linearGradient id="bar1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#045cb4"/>
+      <stop offset="100%" stop-color="#3a7bc8"/>
+    </linearGradient>
+    <linearGradient id="bar2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#8b9bf2"/>
+    </linearGradient>
+    <linearGradient id="bar3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#764ba2"/>
+      <stop offset="100%" stop-color="#9a6fc2"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="320" rx="16" fill="#f4f7fa"/>
+
+  <!-- Fixed -->
+  <text x="40" y="76" font-family="'Inter',sans-serif" font-size="17" font-weight="700" fill="#0f172a">Fixed</text>
+  <rect x="40" y="90" width="430" height="34" rx="10" fill="url(#bar1)"/>
+  <text x="486" y="114" font-family="'Inter',sans-serif" font-size="14" fill="#5d6d7e">Same payment for the whole deal</text>
+
+  <!-- Tracker -->
+  <text x="40" y="166" font-family="'Inter',sans-serif" font-size="17" font-weight="700" fill="#0f172a">Tracker</text>
+  <rect x="40" y="180" width="330" height="34" rx="10" fill="url(#bar2)"/>
+  <text x="386" y="204" font-family="'Inter',sans-serif" font-size="14" fill="#5d6d7e">Moves with the base rate</text>
+
+  <!-- SVR -->
+  <text x="40" y="256" font-family="'Inter',sans-serif" font-size="17" font-weight="700" fill="#0f172a">Standard variable</text>
+  <rect x="40" y="270" width="230" height="34" rx="10" fill="url(#bar3)"/>
+  <text x="286" y="294" font-family="'Inter',sans-serif" font-size="14" fill="#5d6d7e">Lender's default, usually highest</text>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" role="img" aria-label="Illustration of a trowel, a bag of cement and a stack of concrete blocks">
+  <defs>
+    <linearGradient id="bgc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#045cb4"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bgc)"/>
+  <circle cx="720" cy="330" r="150" fill="#ffffff" opacity="0.07"/>
+  <circle cx="60" cy="60" r="100" fill="#ffffff" opacity="0.08"/>
+  <ellipse cx="400" cy="335" rx="220" ry="16" fill="#000000" opacity="0.12"/>
+
+  <!-- block stack -->
+  <g>
+    <rect x="470" y="270" width="90" height="46" rx="4" fill="#e8ecf5"/>
+    <rect x="470" y="270" width="90" height="46" rx="4" fill="none" stroke="#c7d6ea" stroke-width="2"/>
+    <rect x="565" y="270" width="90" height="46" rx="4" fill="#ffffff"/>
+    <rect x="565" y="270" width="90" height="46" rx="4" fill="none" stroke="#c7d6ea" stroke-width="2"/>
+    <rect x="518" y="220" width="90" height="46" rx="4" fill="#ffffff"/>
+    <rect x="518" y="220" width="90" height="46" rx="4" fill="none" stroke="#c7d6ea" stroke-width="2"/>
+  </g>
+
+  <!-- cement bag -->
+  <g transform="translate(240,190)">
+    <path d="M0,10 Q0,0 10,0 L90,0 Q100,0 100,10 L100,140 Q100,150 90,150 L10,150 Q0,150 0,140 Z" fill="#f4f0e6"/>
+    <path d="M8,0 Q20,-16 50,-16 Q80,-16 92,0" fill="none" stroke="#cbb98a" stroke-width="6" stroke-linecap="round"/>
+    <rect x="14" y="40" width="72" height="10" rx="3" fill="#045cb4"/>
+    <text x="50" y="86" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="16" font-weight="700" fill="#045cb4">CEMENT</text>
+    <rect x="14" y="100" width="72" height="6" rx="3" fill="#d8cfa8"/>
+    <rect x="14" y="114" width="50" height="6" rx="3" fill="#d8cfa8"/>
+  </g>
+
+  <!-- trowel -->
+  <g transform="translate(120,120) rotate(-18)">
+    <rect x="0" y="0" width="14" height="90" rx="6" fill="#8a5a34"/>
+    <path d="M-4,90 L18,90 L48,190 Q7,215 -34,190 Z" fill="#c9cdd6"/>
+    <path d="M-4,90 L18,90 L48,190 Q7,215 -34,190 Z" fill="none" stroke="#9aa0ac" stroke-width="3"/>
+  </g>
+</svg>
