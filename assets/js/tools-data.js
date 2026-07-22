@@ -1,0 +1,210 @@
+const CATEGORIES = [
+  { id: 'finance',      label: 'Finance',           emoji: '💰', blurb: 'Mortgages, tax, salary & savings' },
+  { id: 'construction', label: 'Construction',      emoji: '🧱', blurb: 'Materials, mixes & build costs' },
+  { id: 'automotive',   label: 'Automotive',        emoji: '🚗', blurb: 'Fuel, finance & running costs' },
+  { id: 'maths',        label: 'Maths',             emoji: '📐', blurb: 'Percentages, stats & equations' },
+  { id: 'science',      label: 'Science',           emoji: '🔬', blurb: 'Units, physics & conversions' },
+  { id: 'health',       label: 'Health & Fitness',  emoji: '❤️', blurb: 'BMI, calories & wellbeing' },
+  { id: 'education',    label: 'Education',         emoji: '🎓', blurb: 'School years, grades & costs' },
+  { id: 'time',         label: 'Time',              emoji: '⏰', blurb: 'Dates, durations & deadlines' },
+  { id: 'fun',          label: 'Fun & Quirky',      emoji: '🎉', blurb: 'Just for the fun of it' },
+];
+
+const TOOLS = [
+  // ---------------- FINANCE ----------------
+  { id: 'mortgage-repayment', title: 'Mortgage Repayment Calculator', category: 'finance', icon: '🏠', badge: 'hot', functional: true,
+    desc: 'Work out your monthly mortgage payments and total interest over your term.', tags: ['mortgage', 'home loan', 'repayment', 'interest', 'house'] },
+  { id: 'vat', title: 'VAT Calculator', category: 'finance', icon: '🧾', badge: 'hot', functional: true,
+    desc: 'Add or remove UK VAT from any price in seconds.', tags: ['vat', 'tax', 'gross', 'net', 'price'] },
+  { id: 'salary-take-home', title: 'UK Salary Take-Home Calculator', category: 'finance', icon: '💷', badge: 'hot', functional: true,
+    desc: 'Estimate your take-home pay after Income Tax and National Insurance.', tags: ['salary', 'tax', 'income tax', 'national insurance', 'payslip', 'wage'] },
+  { id: 'compound-interest', title: 'Compound Interest Calculator', category: 'finance', icon: '📈', badge: 'trending', functional: true,
+    desc: 'See how your savings or investments grow over time with compounding.', tags: ['compound', 'interest', 'savings', 'investment', 'growth'] },
+  { id: 'loan-repayment', title: 'Loan Repayment Calculator', category: 'finance', icon: '🏦', functional: true,
+    desc: 'Calculate monthly repayments and total interest on any personal loan.', tags: ['loan', 'repayment', 'personal loan', 'apr'] },
+  { id: 'redundancy-pay', title: 'Statutory Redundancy Pay Calculator', category: 'finance', icon: '📄', functional: true,
+    desc: 'Estimate your UK statutory redundancy payment based on age and service.', tags: ['redundancy', 'statutory pay', 'employment', 'severance'] },
+  { id: 'stamp-duty-land-tax', title: 'Stamp Duty (SDLT) Calculator', category: 'finance', icon: '🏘️', badge: 'new', functional: false,
+    desc: 'Estimate Stamp Duty Land Tax on residential property purchases.', tags: ['stamp duty', 'sdlt', 'property tax'] },
+  { id: 'isa-growth-projection', title: 'ISA Growth Projection', category: 'finance', icon: '💹', functional: false,
+    desc: 'Project how your ISA balance could grow with regular contributions.', tags: ['isa', 'investment', 'growth'] },
+  { id: 'pension-pot-projection', title: 'Pension Pot Projection', category: 'finance', icon: '👴', functional: false,
+    desc: 'Estimate your pension pot at retirement based on contributions.', tags: ['pension', 'retirement', 'pot'] },
+  { id: 'self-employed-tax', title: 'Self-Employed Tax Calculator', category: 'finance', icon: '🧑‍💻', functional: false,
+    desc: 'Estimate tax and Class 2/4 NI for self-employed income.', tags: ['self employed', 'sole trader', 'tax'] },
+  { id: 'capital-gains-tax', title: 'Capital Gains Tax Calculator', category: 'finance', icon: '📊', functional: false,
+    desc: 'Estimate CGT owed on the sale of shares or property.', tags: ['capital gains', 'cgt', 'tax'] },
+  { id: 'inheritance-tax', title: 'Inheritance Tax Calculator', category: 'finance', icon: '🕊️', functional: false,
+    desc: 'Estimate potential inheritance tax liability on an estate.', tags: ['inheritance tax', 'iht', 'estate'] },
+  { id: 'credit-card-payoff', title: 'Credit Card Payoff Calculator', category: 'finance', icon: '💳', functional: false,
+    desc: 'Find out how long it will take to clear a credit card balance.', tags: ['credit card', 'debt', 'payoff'] },
+  { id: 'budget-50-30-20', title: '50/30/20 Budget Planner', category: 'finance', icon: '🧮', functional: false,
+    desc: 'Split your income into needs, wants and savings.', tags: ['budget', 'planner', 'savings'] },
+
+  // ---------------- CONSTRUCTION ----------------
+  { id: 'concrete-mix', title: 'Concrete Mix Calculator', category: 'construction', icon: '🧱', badge: 'trending', functional: true,
+    desc: 'Work out cement, sand, aggregate and bag quantities for a pour.', tags: ['concrete', 'cement', 'mix', 'aggregate', 'bags'] },
+  { id: 'paint-coverage', title: 'Paint Coverage Calculator', category: 'construction', icon: '🎨', functional: true,
+    desc: 'Estimate how many litres of paint and coats you need for a room.', tags: ['paint', 'coverage', 'litres', 'walls', 'decorating'] },
+  { id: 'sand-cement-render-mix', title: 'Sand & Cement Render Mix', category: 'construction', icon: '🪣', functional: false,
+    desc: 'Calculate render mix ratios for wall rendering jobs.', tags: ['render', 'sand', 'cement', 'mix'] },
+  { id: 'house-extension-cost', title: 'House Extension Cost Estimator', category: 'construction', icon: '🏗️', functional: false,
+    desc: 'Rough-cost a single or double storey home extension.', tags: ['extension', 'build cost', 'renovation'] },
+  { id: 'fencing-cost', title: 'Fencing Cost Calculator', category: 'construction', icon: '🚧', functional: false,
+    desc: 'Estimate panels, posts and cost for a garden fence.', tags: ['fencing', 'garden', 'cost'] },
+  { id: 'insulation-u-value', title: 'Insulation U-Value Calculator', category: 'construction', icon: '🧊', functional: false,
+    desc: 'Estimate the U-value of a wall or roof build-up.', tags: ['insulation', 'u-value', 'thermal'] },
+  { id: 'roof-tile-quantity', title: 'Roof Tile Quantity Calculator', category: 'construction', icon: '🏚️', functional: false,
+    desc: 'Work out how many roof tiles you need by area.', tags: ['roof', 'tiles', 'quantity'] },
+  { id: 'plasterboard-quantity', title: 'Plasterboard Quantity Calculator', category: 'construction', icon: '📐', functional: false,
+    desc: 'Calculate sheets of plasterboard needed for a room.', tags: ['plasterboard', 'drywall', 'sheets'] },
+  { id: 'skip-size', title: 'Skip Size Selector', category: 'construction', icon: '🗑️', functional: false,
+    desc: 'Find the right skip size for your waste volume.', tags: ['skip', 'waste', 'size'] },
+
+  // ---------------- AUTOMOTIVE ----------------
+  { id: 'fuel-cost-mpg', title: 'Fuel Cost & MPG Calculator', category: 'automotive', icon: '⛽', badge: 'trending', functional: true,
+    desc: 'Work out trip fuel cost and convert between MPG and L/100km.', tags: ['fuel', 'mpg', 'petrol', 'diesel', 'cost', 'l/100km'] },
+  { id: 'car-finance-pcp', title: 'Car Finance (PCP/HP) Calculator', category: 'automotive', icon: '🚙', badge: 'new', functional: true,
+    desc: 'Estimate monthly payments for PCP or HP car finance deals.', tags: ['pcp', 'hp', 'car finance', 'monthly payment'] },
+  { id: 'road-tax-estimator', title: 'Road Tax (VED) Estimator', category: 'automotive', icon: '🚗', functional: false,
+    desc: 'Estimate annual Vehicle Excise Duty for your car.', tags: ['road tax', 'ved', 'vehicle tax'] },
+  { id: 'car-insurance-estimator', title: 'Car Insurance Estimator', category: 'automotive', icon: '🛡️', functional: false,
+    desc: 'Get a rough estimate of annual car insurance costs.', tags: ['insurance', 'car insurance', 'premium'] },
+  { id: 'speeding-fine-estimator', title: 'Speeding Fine Estimator', category: 'automotive', icon: '🚓', functional: false,
+    desc: 'Estimate a potential speeding fine and penalty points.', tags: ['speeding', 'fine', 'penalty points'] },
+  { id: 'ev-charging-cost', title: 'EV Charging Cost Calculator', category: 'automotive', icon: '🔌', badge: 'new', functional: false,
+    desc: 'Work out the cost of charging an electric vehicle at home.', tags: ['ev', 'electric car', 'charging cost'] },
+  { id: 'mileage-allowance', title: 'Mileage Allowance Calculator', category: 'automotive', icon: '🛣️', functional: false,
+    desc: 'Calculate HMRC-approved mileage allowance for business travel.', tags: ['mileage', 'allowance', 'business travel'] },
+  { id: 'tyre-size-comparison', title: 'Tyre Size Comparison Calculator', category: 'automotive', icon: '🛞', functional: false,
+    desc: 'Compare two tyre sizes and see the speedometer difference.', tags: ['tyre', 'size', 'comparison'] },
+
+  // ---------------- MATHS ----------------
+  { id: 'percentage', title: 'Percentage Calculator', category: 'maths', icon: '％', badge: 'hot', functional: true,
+    desc: 'Find a percentage of a number, work out percentage change and more.', tags: ['percentage', 'percent', 'change', 'of a number'] },
+  { id: 'standard-deviation', title: 'Standard Deviation Calculator', category: 'maths', icon: '📉', functional: true,
+    desc: 'Calculate mean, variance and standard deviation for a data set.', tags: ['standard deviation', 'variance', 'statistics', 'mean'] },
+  { id: 'quadratic-solver', title: 'Quadratic Formula Solver', category: 'maths', icon: '➗', functional: true,
+    desc: 'Solve any quadratic equation ax² + bx + c = 0 step by step.', tags: ['quadratic', 'equation', 'roots', 'algebra'] },
+  { id: 'ratio-simplifier', title: 'Ratio Simplifier', category: 'maths', icon: '⚖️', functional: false,
+    desc: 'Simplify any ratio to its lowest terms.', tags: ['ratio', 'simplify'] },
+  { id: 'matrix-determinant', title: 'Matrix Determinant Calculator', category: 'maths', icon: '🔢', functional: false,
+    desc: 'Calculate the determinant of a 2x2 or 3x3 matrix.', tags: ['matrix', 'determinant', 'linear algebra'] },
+  { id: 'unit-circle-angle', title: 'Unit Circle Angle Finder', category: 'maths', icon: '📐', functional: false,
+    desc: 'Find sine, cosine and tangent for any angle on the unit circle.', tags: ['unit circle', 'trigonometry', 'angle'] },
+  { id: 'prime-factorization', title: 'Prime Factorisation Calculator', category: 'maths', icon: '🔑', functional: false,
+    desc: 'Break any number down into its prime factors.', tags: ['prime', 'factorisation', 'factors'] },
+  { id: 'log-calculator', title: 'Logarithm Calculator', category: 'maths', icon: '🧮', functional: false,
+    desc: 'Calculate logarithms to any base.', tags: ['log', 'logarithm'] },
+
+  // ---------------- SCIENCE ----------------
+  { id: 'unit-converter', title: 'Unit Converter', category: 'science', icon: '🔁', badge: 'new', functional: true,
+    desc: 'Convert length, weight and temperature between metric and imperial.', tags: ['unit converter', 'length', 'weight', 'temperature', 'metric', 'imperial'] },
+  { id: 'earth-curvature', title: 'Earth Curvature Calculator', category: 'science', icon: '🌍', functional: false,
+    desc: 'Calculate how much the Earth curves over a given distance.', tags: ['earth curve', 'curvature', 'horizon'] },
+  { id: 'wavelength-frequency', title: 'Wavelength & Frequency Calculator', category: 'science', icon: '〰️', functional: false,
+    desc: 'Convert between wavelength and frequency for any wave.', tags: ['wavelength', 'frequency', 'physics'] },
+  { id: 'resistor-color-code', title: 'Resistor Colour Code Calculator', category: 'science', icon: '🎛️', functional: false,
+    desc: 'Decode resistor colour bands into resistance values.', tags: ['resistor', 'colour code', 'electronics'] },
+  { id: 'dilution-calculator', title: 'Dilution Calculator (C1V1=C2V2)', category: 'science', icon: '🧪', functional: false,
+    desc: 'Work out dilution volumes for a target concentration.', tags: ['dilution', 'concentration', 'chemistry'] },
+  { id: 'moment-of-force', title: 'Moment of Force Calculator', category: 'science', icon: '🔧', functional: false,
+    desc: 'Calculate the turning moment of a force about a pivot.', tags: ['moment', 'force', 'torque'] },
+  { id: 'escape-velocity', title: 'Escape Velocity Calculator', category: 'science', icon: '🚀', functional: false,
+    desc: 'Calculate escape velocity for a given mass and radius.', tags: ['escape velocity', 'physics', 'space'] },
+
+  // ---------------- HEALTH ----------------
+  { id: 'bmi', title: 'BMI Calculator', category: 'health', icon: '⚖️', badge: 'hot', functional: true,
+    desc: 'Calculate your Body Mass Index using metric or imperial units.', tags: ['bmi', 'body mass index', 'weight', 'height'] },
+  { id: 'bmr-calorie', title: 'Calorie & BMR Calculator', category: 'health', icon: '🔥', badge: 'trending', functional: true,
+    desc: 'Find your BMR and daily calorie needs for maintenance, loss or gain.', tags: ['calorie', 'bmr', 'tdee', 'maintenance calories'] },
+  { id: 'pregnancy-due-date', title: 'Pregnancy Due Date Calculator', category: 'health', icon: '🤰', functional: true,
+    desc: "Estimate your baby's due date and current week from your last period.", tags: ['pregnancy', 'due date', 'lmp', 'gestation'] },
+  { id: 'vo2-max-estimator', title: 'VO2 Max Estimator', category: 'health', icon: '🏃', functional: false,
+    desc: 'Estimate your VO2 max from recent run times.', tags: ['vo2 max', 'fitness', 'running'] },
+  { id: 'sleep-cycle-calculator', title: 'Sleep Cycle Calculator', category: 'health', icon: '😴', functional: false,
+    desc: 'Find the best bedtime or wake time based on 90-minute sleep cycles.', tags: ['sleep', 'sleep cycle', 'bedtime'] },
+  { id: 'body-fat-navy', title: 'Body Fat % Calculator (Navy Method)', category: 'health', icon: '📏', functional: false,
+    desc: 'Estimate body fat percentage using the US Navy tape method.', tags: ['body fat', 'navy method'] },
+  { id: 'pace-to-time', title: 'Running Pace Calculator', category: 'health', icon: '⏱️', functional: false,
+    desc: 'Convert running pace to finish time for any distance.', tags: ['pace', 'running', 'finish time'] },
+  { id: 'water-intake', title: 'Daily Water Intake Calculator', category: 'health', icon: '💧', functional: false,
+    desc: 'Estimate how much water you should drink per day.', tags: ['water intake', 'hydration'] },
+  { id: 'heart-rate-zone', title: 'Heart Rate Zone Calculator', category: 'health', icon: '❤️', functional: false,
+    desc: 'Find your training heart rate zones by age.', tags: ['heart rate', 'training zones'] },
+
+  // ---------------- EDUCATION ----------------
+  { id: 'school-year-checker', title: 'UK School Year Checker', category: 'education', icon: '🎒', badge: 'new', functional: true,
+    desc: "Find out what school year a child is in based on their date of birth.", tags: ['school year', 'reception', 'year group', 'birthday cutoff'] },
+  { id: 'uni-degree-classification', title: 'University Degree Classification', category: 'education', icon: '🎓', functional: false,
+    desc: 'Estimate your final degree classification from module marks.', tags: ['degree', 'classification', 'university'] },
+  { id: 'childcare-cost-estimator', title: 'Childcare Cost Estimator', category: 'education', icon: '🧸', functional: false,
+    desc: 'Estimate monthly nursery or childcare costs.', tags: ['childcare', 'nursery', 'cost'] },
+  { id: 'term-time-only-salary', title: 'Term-Time Only Salary Calculator', category: 'education', icon: '🍎', functional: false,
+    desc: 'Convert a full-year salary to a term-time-only equivalent.', tags: ['term time', 'salary', 'teaching assistant'] },
+  { id: 'ucas-tariff-points', title: 'UCAS Tariff Points Calculator', category: 'education', icon: '📜', functional: false,
+    desc: 'Add up UCAS tariff points from A-level and BTEC grades.', tags: ['ucas', 'tariff points', 'a-level'] },
+  { id: 'student-loan-repayment', title: 'Student Loan Repayment Calculator', category: 'education', icon: '📚', functional: false,
+    desc: 'Estimate monthly UK student loan repayments by plan type.', tags: ['student loan', 'repayment', 'plan 2', 'plan 5'] },
+  { id: 'gcse-grade-boundary', title: 'GCSE Grade Boundary Checker', category: 'education', icon: '✏️', functional: false,
+    desc: 'Estimate a 9-1 GCSE grade from a raw exam mark.', tags: ['gcse', 'grade boundary', '9-1'] },
+
+  // ---------------- TIME ----------------
+  { id: 'age-calculator', title: 'Age Calculator', category: 'time', icon: '🎂', functional: true,
+    desc: 'Find your exact age in years, months and days from your birthday.', tags: ['age', 'birthday', 'how old am i'] },
+  { id: 'time-difference', title: 'Time & Date Difference Calculator', category: 'time', icon: '⏳', functional: true,
+    desc: 'Calculate the exact duration between two dates and times.', tags: ['time difference', 'duration', 'date calculator'] },
+  { id: 'annual-leave-entitlement', title: 'Annual Leave Entitlement Calculator', category: 'time', icon: '🏖️', functional: false,
+    desc: 'Work out statutory holiday entitlement for part-time or full-time work.', tags: ['annual leave', 'holiday entitlement'] },
+  { id: 'working-days-between-dates', title: 'Working Days Calculator', category: 'time', icon: '📅', functional: false,
+    desc: 'Count working days between two dates, excluding weekends.', tags: ['working days', 'business days'] },
+  { id: 'countdown-to-date', title: 'Countdown Calculator', category: 'time', icon: '⏲️', functional: false,
+    desc: 'Count down the days, hours and minutes to any future date.', tags: ['countdown', 'days until'] },
+  { id: 'timezone-converter', title: 'Timezone Converter', category: 'time', icon: '🌐', functional: false,
+    desc: 'Convert a time between UK and international timezones.', tags: ['timezone', 'time converter', 'world clock'] },
+  { id: 'holiday-cost-splitter', title: 'Holiday Cost Splitter', category: 'time', icon: '✈️', functional: false,
+    desc: 'Split total trip costs fairly between travellers.', tags: ['holiday', 'cost splitter', 'trip'] },
+
+  // ---------------- FUN & QUIRKY ----------------
+  { id: 'meal-prep-savings', title: 'Meal Prep vs Eating Out Savings', category: 'fun', icon: '🥡', badge: 'trending', functional: true,
+    desc: 'See how much you could save each year by meal prepping instead of eating out.', tags: ['meal prep', 'eating out', 'savings', 'food budget'] },
+  { id: 'sunday-roast-burpees', title: 'Sunday Roast to Burpees Converter', category: 'fun', icon: '🍗', functional: true,
+    desc: 'Find out how many burpees it takes to burn off a Sunday roast.', tags: ['sunday roast', 'burpees', 'calories', 'fun'] },
+  { id: 'double-decker-height', title: 'Height in Double-Decker Buses', category: 'fun', icon: '🚌', functional: true,
+    desc: 'Convert your height into double-decker buses stacked on top of each other.', tags: ['height', 'double decker bus', 'fun conversion'] },
+  { id: 'time-with-parents', title: 'Time Left With Parents Calculator', category: 'fun', icon: '🕰️', functional: true,
+    desc: 'A thought-provoking estimate of how much time you may have left with your parents.', tags: ['time with parents', 'life expectancy', 'family'] },
+  { id: 'greggs-sausage-roll-inflation', title: 'Greggs Sausage Roll Inflation Tracker', category: 'fun', icon: '🥐', functional: false,
+    desc: 'Track how sausage roll prices have crept up over the years.', tags: ['greggs', 'sausage roll', 'inflation'] },
+  { id: 'beatles-discography-duration', title: 'Beatles Discography Duration', category: 'fun', icon: '🎸', functional: false,
+    desc: 'Find out how long it takes to listen to the entire Beatles discography.', tags: ['beatles', 'music', 'duration'] },
+  { id: 'harry-potter-reading-time', title: 'Harry Potter Reading Time Estimator', category: 'fun', icon: '📖', functional: false,
+    desc: 'Estimate how long it takes to read the whole Harry Potter series.', tags: ['harry potter', 'reading time', 'books'] },
+  { id: 'royal-wealth-comparison', title: 'Royal Family Wealth Comparison', category: 'fun', icon: '👑', functional: false,
+    desc: 'Compare your savings to the wealth of the Royal Family, just for fun.', tags: ['royal family', 'wealth', 'comparison'] },
+  { id: 'wedding-vs-house-deposit', title: 'Wedding Cost vs House Deposit', category: 'fun', icon: '💍', functional: false,
+    desc: 'Compare the average UK wedding cost to a house deposit.', tags: ['wedding', 'house deposit', 'comparison'] },
+  { id: 'netflix-binge-time', title: 'Netflix Binge Time Calculator', category: 'fun', icon: '📺', functional: false,
+    desc: 'Work out how long it would take to binge your favourite show.', tags: ['netflix', 'binge', 'tv time'] },
+];
+
+const NEW_TOOLS = TOOLS.filter(t => t.badge === 'new');
+const POPULAR_IDS = ['mortgage-repayment', 'salary-take-home', 'bmi', 'vat', 'percentage', 'loan-repayment', 'compound-interest', 'concrete-mix'];
+const POPULAR_TOOLS = POPULAR_IDS.map(id => TOOLS.find(t => t.id === id)).filter(Boolean);
+const FUN_TOOLS = TOOLS.filter(t => t.category === 'fun');
+
+function getToolById(id) { return TOOLS.find(t => t.id === id); }
+function getCategoryById(id) { return CATEGORIES.find(c => c.id === id); }
+function toolsInCategory(id) { return TOOLS.filter(t => t.category === id); }
+function relatedTools(tool, limit = 4) {
+  return TOOLS.filter(t => t.category === tool.category && t.id !== tool.id).slice(0, limit);
+}
+function searchTools(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  return TOOLS.filter(t =>
+    t.title.toLowerCase().includes(q) ||
+    t.desc.toLowerCase().includes(q) ||
+    t.tags.some(tag => tag.includes(q))
+  );
+}
