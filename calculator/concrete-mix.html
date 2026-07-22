@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concrete Mix Calculator · Pro Calculator UK</title>
+<meta name="description" content="Work out cement, sand, aggregate and bag quantities for a pour.">
+<meta name="keywords" content="concrete mix calculator, uk concrete mix calculator, free concrete mix calculator, concrete mix uk">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://procalculator.site/calculator/concrete-mix">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pro Calculator UK">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Concrete Mix Calculator · Pro Calculator UK">
+<meta property="og:description" content="Work out cement, sand, aggregate and bag quantities for a pour.">
+<meta property="og:url" content="https://procalculator.site/calculator/concrete-mix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Concrete Mix Calculator · Pro Calculator UK">
+<meta name="twitter:description" content="Work out cement, sand, aggregate and bag quantities for a pour.">
+<script type="application/ld+json" id="ld-breadcrumb">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://procalculator.site/"},{"@type":"ListItem","position":2,"name":"Construction Calculators","item":"https://procalculator.site/calculators/construction"},{"@type":"ListItem","position":3,"name":"Concrete Mix Calculator","item":"https://procalculator.site/calculator/concrete-mix"}]}</script>
+<script type="application/ld+json" id="ld-faq">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much extra concrete should I order over the calculated amount?","acceptedAnswer":{"@type":"Answer","text":"A buffer of roughly 5\u201310% is standard practice to account for an uneven sub-base, minor formwork gaps, and wastage during mixing or pouring."}},{"@type":"Question","name":"What concrete mix ratio should I use for a garden path or slab?","acceptedAnswer":{"@type":"Answer","text":"A general-purpose ratio like 1:2:3 (cement:sand:aggregate) is commonly used for non-structural paths and slabs, but always check product-specific guidance, since ratios vary by manufacturer and intended use."}},{"@type":"Question","name":"Do I need a different formula for a circular post hole?","acceptedAnswer":{"@type":"Answer","text":"Yes \u2014 a cylindrical shape like a post hole uses a volume formula based on the radius (not width), since it's a different geometric shape from a rectangular slab. Using a rectangular formula for a round hole will give the wrong answer."}},{"@type":"Question","name":"Should I mix my own concrete or buy pre-mixed bags?","acceptedAnswer":{"@type":"Answer","text":"For small jobs, pre-mixed bagged concrete is usually simpler \u2014 just divide your total volume by the bag's stated yield. For larger pours, buying raw materials (cement, sand, aggregate) separately in bulk, or ordering ready-mix delivery, is often more cost-effective."}}]}</script>
+<script type="application/ld+json" id="ld-webapp">{"@context":"https://schema.org","@type":"WebApplication","name":"Concrete Mix Calculator","url":"https://procalculator.site/calculator/concrete-mix","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"GBP"}}</script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand"><span class="brand-mark">🧮</span><span>Pro Calculator UK<small>Free UK Calculators</small></span></a>
+    <nav class="main-nav">
+      <a href="/">Home</a>
+      <a href="/calculators">All Calculators</a>
+      <a href="/blog">Blog</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button class="header-search-btn" data-search-trigger type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>Search calculators…</span><kbd>⌘K</kbd>
+      </button>
+      <button class="btn-icon" data-theme-toggle type="button" aria-label="Toggle dark mode">🌙</button>
+      <button class="btn-icon nav-toggle" data-nav-toggle type="button" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-drawer" data-mobile-drawer>
+  <div class="backdrop"></div>
+  <div class="panel">
+    <a href="/">Home</a>
+    <a href="/calculators">All Calculators</a>
+    <a href="/blog">Blog</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/disclaimer">Disclaimer</a>
+  </div>
+</div>
+
+<div class="search-overlay" data-search-overlay>
+  <div class="backdrop"></div>
+  <div class="search-panel">
+    <div class="search-panel-input">
+      <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Search 80+ UK calculators…">
+    </div>
+    <div class="search-results" data-search-results></div>
+  </div>
+</div>
+
+<main>
+  <section class="tool-hero">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/">Home</a><span>/</span>
+        <a href="/calculators/construction">Construction</a><span>/</span>
+        <span>Concrete Mix Calculator</span>
+      </nav>
+      <div class="head-row">
+        <div class="tool-icon tool-icon-lg">🧱</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <h1>Concrete Mix Calculator</h1><span class="badge badge-trending">Trending</span>
+          </div>
+        </div>
+      </div>
+      <p class="desc">Work out cement, sand, aggregate and bag quantities for a pour.</p>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="calc-layout" data-static-calc="concrete-mix">
+      <div class="panel" data-form-panel></div>
+      <div class="result-panel">
+        <div class="panel" data-result-panel></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container prose" style="max-width:800px">
+      <h2 style="border-top:none;padding-top:0">How it works</h2>
+      <p>Concrete is sold and mixed by volume, not weight, so the first step is always converting your project's dimensions into cubic metres — for a simple slab or path, that's length × width × depth, all measured in metres. Once you know the volume, a mix ratio (cement to sand to aggregate) determines how that volume splits into the weights of each raw material, which then convert into bag counts based on the bag sizes you're buying.</p>
+      <p>For a cylindrical shape like a fence post hole, the formula changes to account for the circular cross-section (using the radius, not a straight width) — using the wrong formula for the shape is a common source of ordering errors.</p>
+      <h2>UK context</h2>
+      <p>A common general-purpose mix ratio is 1:2:3 (one part cement, two parts sand, three parts aggregate), while foundations and other load-bearing work often use a stronger ratio such as 1:1.5:2.5 or 1:2:4. Stronger mixes use proportionally more cement — also the most expensive ingredient — so getting the ratio right matters for both durability and cost. See our <a href="/blog/how-much-concrete-do-i-need">full guide to working out how much concrete you need</a> for a walk-through with worked examples.</p>
+      <p>If you're using pre-mixed bagged concrete rather than combining raw materials yourself, the bag's packaging usually states a yield (how much volume one bag produces) — in that case you can skip the ratio maths entirely and just divide your total volume by the stated yield.</p>
+      <h2>Tips</h2>
+      <ul>
+        <li>Add a 5–10% buffer to your calculated volume — ground is rarely perfectly level and running short mid-pour is far more disruptive than having a little extra material.</li>
+        <li>For structural or load-bearing work (foundations, retaining walls), always check the manufacturer's guidance or consult a builder rather than relying on a general-purpose ratio.</li>
+        <li>Concrete needs time to cure properly before it takes full load — rushing this is a common cause of cracking and long-term weakness.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container prose" style="padding-top:0;max-width:800px">
+      <h2 style="border-top:none;padding-top:0">Frequently asked questions</h2>
+        <div class="contact-info-item">
+          <h4>How much extra concrete should I order over the calculated amount?</h4>
+          <p>A buffer of roughly 5–10% is standard practice to account for an uneven sub-base, minor formwork gaps, and wastage during mixing or pouring.</p>
+        </div>
+        <div class="contact-info-item">
+          <h4>What concrete mix ratio should I use for a garden path or slab?</h4>
+          <p>A general-purpose ratio like 1:2:3 (cement:sand:aggregate) is commonly used for non-structural paths and slabs, but always check product-specific guidance, since ratios vary by manufacturer and intended use.</p>
+        </div>
+        <div class="contact-info-item">
+          <h4>Do I need a different formula for a circular post hole?</h4>
+          <p>Yes — a cylindrical shape like a post hole uses a volume formula based on the radius (not width), since it's a different geometric shape from a rectangular slab. Using a rectangular formula for a round hole will give the wrong answer.</p>
+        </div>
+        <div class="contact-info-item">
+          <h4>Should I mix my own concrete or buy pre-mixed bags?</h4>
+          <p>For small jobs, pre-mixed bagged concrete is usually simpler — just divide your total volume by the bag's stated yield. For larger pours, buying raw materials (cement, sand, aggregate) separately in bulk, or ordering ready-mix delivery, is often more cost-effective.</p>
+        </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container prose" style="max-width:800px;padding-bottom:0">
+      <h2 style="border-top:none;padding-top:0">A quick note</h2>
+      <p>Mix ratios, coverage rates and product yields vary by manufacturer and application — this page explains how the calculation works, not a substitute for product-specific technical guidance. Always check the manufacturer's data sheet, or consult a builder for structural or load-bearing work. See our <a href="/disclaimer">full disclaimer</a>.</p>
+      <h3>References</h3>
+      <ul>
+<li><a href="https://www.gov.uk/building-regulations-approval" rel="nofollow noopener" target="_blank">gov.uk: Building regulations approval</a></li>
+<li><a href="https://www.planningportal.co.uk" rel="nofollow noopener" target="_blank">Planning Portal: building work guidance</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 class="related-heading">Related calculators</h2>
+    <div class="grid grid-4">
+          <a class="card card-link tool-card" href="/calculator/paint-coverage">
+            <div class="top-row"><div class="tool-icon">🎨</div></div>
+            <div><span class="cat-tag">Construction</span><h3>Paint Coverage Calculator</h3></div>
+          </a>
+          <a class="card card-link tool-card" href="/calculator/mortgage-repayment">
+            <div class="top-row"><div class="tool-icon">🏠</div></div>
+            <div><span class="cat-tag">Finance</span><h3>Mortgage Repayment Calculator</h3></div>
+          </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="brand"><span class="brand-mark">🧮</span><span>Pro Calculator UK</span></a>
+        <p>Free, instant calculators built for everyday UK life — finance, health, home and a little bit of fun.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Categories</h4>
+        <a href="/calculators/finance">Finance</a>
+        <a href="/calculators/construction">Construction</a>
+        <a href="/calculators/automotive">Automotive</a>
+        <a href="/calculators/health">Health &amp; Fitness</a>
+        <a href="/calculators/maths">Maths</a>
+      </div>
+      <div class="footer-col">
+        <h4>More</h4>
+        <a href="/calculators/science">Science</a>
+        <a href="/calculators/education">Education</a>
+        <a href="/calculators/time">Time</a>
+        <a href="/calculators/fun">Fun &amp; Quirky</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="/blog">Blog</a>
+        <a href="/about">About Us</a>
+        <a href="/contact">Contact</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/disclaimer">Disclaimer</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Pro Calculator UK. All results are estimates for guidance only.</span>
+      <span>Built for the UK 🇬🇧</span>
+    </div>
+  </div>
+</footer>
+<button class="back-to-top" data-back-to-top type="button" aria-label="Back to top">↑</button>
+
+<script src="/assets/js/tools-data.js"></script>
+<script src="/assets/js/calculators.js"></script>
+<script src="/assets/js/app.js"></script>
+<script src="/assets/js/calc-init.js"></script>
+</body>
+</html>
