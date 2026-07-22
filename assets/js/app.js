@@ -81,9 +81,9 @@
       const name = contactForm.querySelector('#c-name').value.trim();
       const email = contactForm.querySelector('#c-email').value.trim();
       const message = contactForm.querySelector('#c-message').value.trim();
-      const subject = `Message from ${name || 'QuickCalc UK visitor'}`;
+      const subject = `Message from ${name || 'Pro Calculator UK visitor'}`;
       const body = `${message}\n\n— ${name} (${email})`;
-      window.location.href = `mailto:hello@quickcalc.example.uk?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = `mailto:hello@procalculator.site?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     });
   }
 

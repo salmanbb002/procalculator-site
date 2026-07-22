@@ -24,15 +24,16 @@
   if (categoryGrid) {
     categoryGrid.innerHTML = CATEGORIES.filter(c => c.id !== 'fun').map(c => {
       const tools = toolsInCategory(c.id);
-      const examples = tools.slice(0, 3).map(t => `<span>${t.title.replace(/ Calculator.*| Estimator.*/,'')}</span>`).join('');
+      const links = tools.slice(0, 5).map(t => `<li><a href="calculator.html?tool=${t.id}">${t.title.replace(/ Calculator.*| Estimator.*/,'')}</a></li>`).join('');
       return `
-        <a class="card card-link category-card" href="calculators.html?category=${c.id}">
-          <div class="head"><div class="emoji" style="background:var(--primary-light)">${c.emoji}</div>
+        <div class="card category-card">
+          <div class="head"><div class="emoji">${c.emoji}</div>
             <div><h3>${c.label}</h3><span class="count">${tools.length} calculators</span></div>
           </div>
           <p>${c.blurb}</p>
-          <div class="examples">${examples}</div>
-        </a>`;
+          <ul class="cat-links">${links}</ul>
+          <a class="view-all" href="calculators.html?category=${c.id}">View all ${c.label} calculators →</a>
+        </div>`;
     }).join('');
   }
 
@@ -44,6 +45,19 @@
         <div class="info"><strong>${t.title}</strong><span>${getCategoryById(t.category).label} · Added this month</span></div>
         <span class="badge badge-new">New</span>
       </a>`).join('');
+  }
+
+  const funRowScroller = document.querySelector('[data-fun-row]');
+  const prevBtn = document.querySelector('[data-carousel-prev]');
+  const nextBtn = document.querySelector('[data-carousel-next]');
+  if (funRowScroller && prevBtn && nextBtn) {
+    const scrollByCard = dir => {
+      const card = funRowScroller.querySelector('.card');
+      const step = card ? card.getBoundingClientRect().width + 18 : 280;
+      funRowScroller.scrollBy({ left: dir * step, behavior: 'smooth' });
+    };
+    prevBtn.addEventListener('click', () => scrollByCard(-1));
+    nextBtn.addEventListener('click', () => scrollByCard(1));
   }
 
   const heroSearch = document.querySelector('[data-hero-search]');

@@ -15,12 +15,12 @@
           <a class="btn btn-primary" href="calculators.html">Browse all calculators</a>
         </div>
       </div></div>`;
-    document.title = 'Calculator not found · QuickCalc UK';
+    document.title = 'Calculator not found · Pro Calculator UK';
     return;
   }
 
   const cat = getCategoryById(tool.category);
-  document.title = `${tool.title} · QuickCalc UK`;
+  document.title = `${tool.title} · Pro Calculator UK`;
   const metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) metaDesc.setAttribute('content', tool.desc);
 
