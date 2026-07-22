@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/calculator/:tool", "destination": "/calculator.html" },
-    { "source": "/calculators/:category", "destination": "/calculators.html" }
+    { "source": "/calculator/:tool", "destination": "/calculator" },
+    { "source": "/calculators/:category", "destination": "/calculators" }
   ]
 }
