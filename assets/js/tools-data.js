@@ -136,17 +136,17 @@ const TOOLS = [
   // ---------------- EDUCATION ----------------
   { id: 'school-year-checker', title: 'UK School Year Checker', category: 'education', icon: '🎒', badge: 'new', functional: true,
     desc: "Find out what school year a child is in based on their date of birth.", tags: ['school year', 'reception', 'year group', 'birthday cutoff'] },
-  { id: 'uni-degree-classification', title: 'University Degree Classification', category: 'education', icon: '🎓', functional: false,
+  { id: 'uni-degree-classification', title: 'University Degree Classification', category: 'education', icon: '🎓', functional: true,
     desc: 'Estimate your final degree classification from module marks.', tags: ['degree', 'classification', 'university'] },
-  { id: 'childcare-cost-estimator', title: 'Childcare Cost Estimator', category: 'education', icon: '🧸', functional: false,
+  { id: 'childcare-cost-estimator', title: 'Childcare Cost Estimator', category: 'education', icon: '🧸', functional: true,
     desc: 'Estimate monthly nursery or childcare costs.', tags: ['childcare', 'nursery', 'cost'] },
-  { id: 'term-time-only-salary', title: 'Term-Time Only Salary Calculator', category: 'education', icon: '🍎', functional: false,
+  { id: 'term-time-only-salary', title: 'Term-Time Only Salary Calculator', category: 'education', icon: '🍎', functional: true,
     desc: 'Convert a full-year salary to a term-time-only equivalent.', tags: ['term time', 'salary', 'teaching assistant'] },
-  { id: 'ucas-tariff-points', title: 'UCAS Tariff Points Calculator', category: 'education', icon: '📜', functional: false,
+  { id: 'ucas-tariff-points', title: 'UCAS Tariff Points Calculator', category: 'education', icon: '📜', functional: true,
     desc: 'Add up UCAS tariff points from A-level and BTEC grades.', tags: ['ucas', 'tariff points', 'a-level'] },
-  { id: 'student-loan-repayment', title: 'Student Loan Repayment Calculator', category: 'education', icon: '📚', functional: false,
+  { id: 'student-loan-repayment', title: 'Student Loan Repayment Calculator', category: 'education', icon: '📚', functional: true,
     desc: 'Estimate monthly UK student loan repayments by plan type.', tags: ['student loan', 'repayment', 'plan 2', 'plan 5'] },
-  { id: 'gcse-grade-boundary', title: 'GCSE Grade Boundary Checker', category: 'education', icon: '✏️', functional: false,
+  { id: 'gcse-grade-boundary', title: 'GCSE Grade Boundary Checker', category: 'education', icon: '✏️', functional: true,
     desc: 'Estimate a 9-1 GCSE grade from a raw exam mark.', tags: ['gcse', 'grade boundary', '9-1'] },
 
   // ---------------- TIME ----------------

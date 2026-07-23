@@ -1911,3 +1911,176 @@ CALCULATORS['heart-rate-zone'] = {
     wireLiveCalc(formEl, calc);
   }
 };
+
+/* ---------------- University degree classification ---------------- */
+CALCULATORS['uni-degree-classification'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your marks</h3>
+      <div class="field-row">
+        <div class="field"><label>Year 2 average (%)</label><input type="number" id="dc-y2" value="65"></div>
+        <div class="field"><label>Year 2 weighting (%)</label><input type="number" id="dc-y2w" value="33"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Year 3 average (%)</label><input type="number" id="dc-y3" value="70"></div>
+        <div class="field"><label>Year 3 weighting (%)</label><input type="number" id="dc-y3w" value="67"></div>
+      </div>`;
+    function calc() {
+      const y2 = +qs(formEl, '#dc-y2').value || 0, y2w = +qs(formEl, '#dc-y2w').value || 0;
+      const y3 = +qs(formEl, '#dc-y3').value || 0, y3w = +qs(formEl, '#dc-y3w').value || 0;
+      const totalWeight = y2w + y3w;
+      if (!totalWeight) { resultEl.innerHTML = emptyResult('Enter your marks and weightings'); return; }
+      const weighted = (y2 * y2w + y3 * y3w) / totalWeight;
+      let classification;
+      if (weighted >= 70) classification = 'First-Class Honours (1st)';
+      else if (weighted >= 60) classification = 'Upper Second-Class Honours (2:1)';
+      else if (weighted >= 50) classification = 'Lower Second-Class Honours (2:2)';
+      else if (weighted >= 40) classification = 'Third-Class Honours (3rd)';
+      else classification = 'Below honours threshold';
+      resultEl.innerHTML = heroBlock('Estimated classification', classification, `${fmtNum(weighted, 1)}% weighted average`) +
+        `<div class="result-rows">${resultRow('Weighted average', `${fmtNum(weighted, 1)}%`)}${resultRow('Year 2 contribution', `${y2}% × ${y2w}%`)}${resultRow('Year 3 contribution', `${y3}% × ${y3w}%`)}</div>` +
+        infoNote('Uses standard UK classification bands (70/60/50/40) with the weighting you enter. Exact weighting schemes, borderline/discretionary rules and whether year 1 counts vary significantly by university — check your specific institution\'s regulations.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Childcare cost estimator ---------------- */
+CALCULATORS['childcare-cost-estimator'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your childcare</h3>
+      <div class="field-row">
+        <div class="field"><label>Hourly rate (£)</label><input type="number" step="0.01" id="cc-rate" value="6.50"></div>
+        <div class="field"><label>Hours per day</label><input type="number" id="cc-hours" value="9"></div>
+      </div>
+      <div class="field"><label>Days per week</label><input type="number" id="cc-days" value="3"></div>`;
+    function calc() {
+      const rate = +qs(formEl, '#cc-rate').value || 0;
+      const hours = +qs(formEl, '#cc-hours').value || 0;
+      const days = +qs(formEl, '#cc-days').value || 0;
+      if (!rate || !hours || !days) { resultEl.innerHTML = emptyResult('Enter rate, hours and days'); return; }
+      const daily = rate * hours;
+      const weekly = daily * days;
+      const monthly = (weekly * 52) / 12;
+      const annual = weekly * 52;
+      resultEl.innerHTML = heroBlock('Monthly cost', fmtGBP(monthly), `${fmtGBP(weekly)}/week`) +
+        `<div class="result-rows">${resultRow('Daily cost', fmtGBP(daily))}${resultRow('Weekly cost', fmtGBP(weekly))}${resultRow('Annual cost', fmtGBP(annual))}</div>` +
+        infoNote('Uses the rate and hours you enter, since actual childcare costs vary hugely by region and provider. Doesn\'t account for government schemes (free hours, Tax-Free Childcare, Universal Credit childcare element) — check gov.uk for what you may be eligible for.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Term-time only salary calculator ---------------- */
+CALCULATORS['term-time-only-salary'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Salary details</h3>
+      <div class="field"><label>Full-year equivalent salary</label><input type="number" id="tt-salary" value="24000"></div>
+      <div class="field-row">
+        <div class="field"><label>Weeks worked per year</label><input type="number" id="tt-weeks" value="39"></div>
+        <div class="field"><label>Include holiday pay weeks</label><input type="number" id="tt-holiday" value="5.6"></div>
+      </div>`;
+    function calc() {
+      const salary = +qs(formEl, '#tt-salary').value || 0;
+      const weeks = +qs(formEl, '#tt-weeks').value || 0;
+      const holiday = +qs(formEl, '#tt-holiday').value || 0;
+      if (!salary || !weeks) { resultEl.innerHTML = emptyResult('Enter salary and weeks worked'); return; }
+      const paidWeeks = weeks + holiday;
+      const proRated = salary * (paidWeeks / 52.14);
+      resultEl.innerHTML = heroBlock('Term-time-only salary', fmtGBP(proRated), `${fmtNum(paidWeeks, 1)} paid weeks of 52.14`) +
+        `<div class="result-rows">${resultRow('Full-year equivalent', fmtGBP(salary))}${resultRow('Weeks worked', weeks)}${resultRow('Holiday pay weeks', holiday)}${resultRow('Monthly (spread over 12)', fmtGBP(proRated / 12))}</div>` +
+        infoNote('Pro-rates the full-year salary by paid weeks (worked + statutory holiday entitlement) out of 52.14 weeks in a year. Many term-time-only roles have pay spread evenly across 12 months rather than paid only in worked weeks — check your specific contract.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- UCAS tariff points calculator ---------------- */
+CALCULATORS['ucas-tariff-points'] = {
+  render(formEl, resultEl) {
+    const ALEVEL = { 'A*': 56, 'A': 48, 'B': 40, 'C': 32, 'D': 24, 'E': 16 };
+    formEl.innerHTML = `
+      <h3>A-level grades</h3>
+      <p class="hint" style="margin-bottom:12px">Select up to 4 A-levels (leave as "—" if not used)</p>
+      <div class="field-row">
+        <div class="field"><label>Subject 1</label><select class="ucas-grade">${Object.keys(ALEVEL).map(g => `<option>${g}</option>`).join('')}<option value="">—</option></select></div>
+        <div class="field"><label>Subject 2</label><select class="ucas-grade">${Object.keys(ALEVEL).map(g => `<option>${g}</option>`).join('')}<option value="">—</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Subject 3</label><select class="ucas-grade">${Object.keys(ALEVEL).map(g => `<option>${g}</option>`).join('')}<option value="" selected>—</option></select></div>
+        <div class="field"><label>Subject 4</label><select class="ucas-grade">${Object.keys(ALEVEL).map(g => `<option>${g}</option>`).join('')}<option value="" selected>—</option></select></div>
+      </div>`;
+    formEl.querySelectorAll('.ucas-grade')[2].value = '';
+    formEl.querySelectorAll('.ucas-grade')[3].value = '';
+    function calc() {
+      const grades = [...formEl.querySelectorAll('.ucas-grade')].map(s => s.value).filter(Boolean);
+      if (!grades.length) { resultEl.innerHTML = emptyResult('Select at least one grade'); return; }
+      const total = grades.reduce((sum, g) => sum + (ALEVEL[g] || 0), 0);
+      resultEl.innerHTML = heroBlock('Total UCAS points', total, `${grades.length} A-level(s): ${grades.join(', ')}`) +
+        `<div class="result-rows">${grades.map(g => resultRow(g, ALEVEL[g])).join('')}</div>` +
+        infoNote('Uses the standard UCAS Tariff points table for A-levels only. BTECs, Scottish Highers, IB and other qualifications use separate tariff tables not included here — check ucas.com for your specific qualification.');
+    }
+    formEl.addEventListener('change', calc);
+    calc();
+  }
+};
+
+/* ---------------- Student loan repayment calculator ---------------- */
+CALCULATORS['student-loan-repayment'] = {
+  render(formEl, resultEl) {
+    const PLANS = {
+      plan1: { threshold: 24990, rate: 0.09, label: 'Plan 1' },
+      plan2: { threshold: 27295, rate: 0.09, label: 'Plan 2' },
+      plan4: { threshold: 31395, rate: 0.09, label: 'Plan 4 (Scotland)' },
+      plan5: { threshold: 25000, rate: 0.09, label: 'Plan 5' },
+      postgrad: { threshold: 21000, rate: 0.06, label: 'Postgraduate Loan' },
+    };
+    formEl.innerHTML = `
+      <h3>Your loan</h3>
+      <div class="field"><label>Plan type</label>
+        <select id="sl-plan">${Object.entries(PLANS).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Annual gross salary</label><input type="number" id="sl-salary" value="32000"></div>`;
+    formEl.querySelector('#sl-plan').addEventListener('change', calc);
+    function calc() {
+      const plan = PLANS[qs(formEl, '#sl-plan').value];
+      const salary = +qs(formEl, '#sl-salary').value || 0;
+      if (!salary) { resultEl.innerHTML = emptyResult('Enter your annual salary'); return; }
+      const excess = Math.max(0, salary - plan.threshold);
+      const annualRepayment = excess * plan.rate;
+      const monthlyRepayment = annualRepayment / 12;
+      resultEl.innerHTML = heroBlock('Monthly repayment', fmtGBP(monthlyRepayment), `${plan.label}, ${fmtNum(plan.rate * 100, 0)}% above ${fmtGBP(plan.threshold)}`) +
+        `<div class="result-rows">${resultRow('Repayment threshold', fmtGBP(plan.threshold))}${resultRow('Income above threshold', fmtGBP(excess))}${resultRow('Annual repayment', fmtGBP(annualRepayment))}</div>` +
+        infoNote('Uses standard plan repayment rates and thresholds — these are reviewed and can change (thresholds are usually adjusted, sometimes annually). Always confirm your specific plan and current threshold on gov.uk or via the Student Loans Company.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- GCSE grade boundary checker ---------------- */
+CALCULATORS['gcse-grade-boundary'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your mark</h3>
+      <div class="field-row">
+        <div class="field"><label>Raw mark achieved</label><input type="number" id="gc-mark" value="65"></div>
+        <div class="field"><label>Total marks available</label><input type="number" id="gc-total" value="100"></div>
+      </div>`;
+    function calc() {
+      const mark = +qs(formEl, '#gc-mark').value || 0;
+      const total = +qs(formEl, '#gc-total').value || 0;
+      if (!total) { resultEl.innerHTML = emptyResult('Enter total marks available'); return; }
+      const pct = (mark / total) * 100;
+      const bands = [
+        [90, '9'], [80, '8'], [70, '7'], [60, '6'], [50, '5'], [40, '4'], [30, '3'], [20, '2'], [10, '1'], [0, 'U']
+      ];
+      const grade = (bands.find(b => pct >= b[0]) || bands[bands.length - 1])[1];
+      resultEl.innerHTML = heroBlock('Illustrative grade', grade, `${fmtNum(pct, 1)}% of available marks`) +
+        `<div class="result-rows">${resultRow('Mark', `${mark} / ${total}`)}${resultRow('Percentage', `${fmtNum(pct, 1)}%`)}</div>` +
+        infoNote('This uses evenly-spaced illustrative bands, NOT real grade boundaries. Actual GCSE grade boundaries are set separately for every subject, exam board and exam series based on that paper\'s difficulty, and are published by exam boards after results day — this tool cannot know your real boundary. Check your specific exam board\'s published boundaries for an accurate grade.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
