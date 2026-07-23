@@ -1738,3 +1738,176 @@ CALCULATORS['escape-velocity'] = {
     wireLiveCalc(formEl, calc);
   }
 };
+
+/* ---------------- VO2 max estimator ---------------- */
+CALCULATORS['vo2-max-estimator'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Cooper 12-minute run test</h3>
+      <div class="field"><label>Distance covered in 12 minutes (metres)</label><input type="number" id="vo-dist" value="2400"></div>
+      <p class="hint" style="margin-top:-8px">Run/jog as far as you can in exactly 12 minutes, then enter the distance.</p>`;
+    function calc() {
+      const dist = +qs(formEl, '#vo-dist').value || 0;
+      if (!dist) { resultEl.innerHTML = emptyResult('Enter your 12-minute distance'); return; }
+      const vo2max = (dist - 504.9) / 44.73;
+      let rating;
+      if (vo2max < 30) rating = 'Below average';
+      else if (vo2max < 40) rating = 'Average';
+      else if (vo2max < 50) rating = 'Good';
+      else if (vo2max < 60) rating = 'Excellent';
+      else rating = 'Superior';
+      resultEl.innerHTML = heroBlock('Estimated VO2 max', `${fmtNum(vo2max, 1)} ml/kg/min`, rating) +
+        `<div class="result-rows">${resultRow('Distance covered', `${dist} m`)}${resultRow('Estimated VO2 max', `${fmtNum(vo2max, 1)} ml/kg/min`)}${resultRow('General category', rating)}</div>` +
+        infoNote('Uses the Cooper 12-minute run test formula, a widely used field-test estimate — not as precise as a laboratory gas-exchange VO2 max test. Categories are general and vary by age and sex.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Sleep cycle calculator ---------------- */
+CALCULATORS['sleep-cycle-calculator'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Plan around</h3>
+      <div class="field"><label>Mode</label>
+        <div class="seg" data-seg="mode"><button data-value="wake" class="active">I need to wake up at...</button><button data-value="bed">I'm going to bed at...</button></div>
+      </div>
+      <div class="field"><label>Time</label><input type="time" id="sc-time" value="07:00"></div>
+      <div class="field"><label>Minutes to fall asleep</label><input type="number" id="sc-fallasleep" value="15"></div>`;
+    segControl(formEl, 'mode', calc);
+    function calc() {
+      const [h, m] = qs(formEl, '#sc-time').value.split(':').map(Number);
+      const fallAsleep = +qs(formEl, '#sc-fallasleep').value || 0;
+      const mode = segValue(formEl, 'mode');
+      if (isNaN(h)) { resultEl.innerHTML = emptyResult('Enter a time'); return; }
+      const baseMinutes = h * 60 + m;
+      const cycles = [3, 4, 5, 6];
+      const times = cycles.map(c => {
+        const cycleMin = c * 90;
+        let target = mode === 'wake' ? baseMinutes - cycleMin - fallAsleep : baseMinutes + cycleMin + fallAsleep;
+        target = ((target % 1440) + 1440) % 1440;
+        const th = Math.floor(target / 60), tm = target % 60;
+        return { cycles: c, time: `${String(th).padStart(2, '0')}:${String(tm).padStart(2, '0')}`, hours: fmtNum(cycleMin / 60, 1) };
+      });
+      resultEl.innerHTML = heroBlock(mode === 'wake' ? 'Best bedtimes' : 'Best wake times', times[2].time, `${times[2].cycles} cycles (${times[2].hours}h) — a good default`) +
+        `<div class="result-rows">${times.map(t => resultRow(`${t.cycles} cycles (${t.hours}h)`, t.time)).join('')}</div>` +
+        infoNote('Based on the standard ~90-minute sleep cycle model. Individual cycle length varies (roughly 70-120 minutes), so treat these as a helpful guide, not an exact science.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Body fat % (Navy method) ---------------- */
+CALCULATORS['body-fat-navy'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your measurements (cm)</h3>
+      <div class="field"><label>Sex</label>
+        <div class="seg" data-seg="sex"><button data-value="male" class="active">Male</button><button data-value="female">Female</button></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Height</label><input type="number" id="bf-height" value="178"></div>
+        <div class="field"><label>Neck</label><input type="number" id="bf-neck" value="38"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Waist</label><input type="number" id="bf-waist" value="85"></div>
+        <div class="field" data-group="hip" style="display:none"><label>Hip</label><input type="number" id="bf-hip" value="95"></div>
+      </div>`;
+    segControl(formEl, 'sex', () => { formEl.querySelector('[data-group="hip"]').style.display = segValue(formEl, 'sex') === 'female' ? '' : 'none'; calc(); });
+    function toIn(cm) { return cm / 2.54; }
+    function calc() {
+      const sex = segValue(formEl, 'sex');
+      const height = toIn(+qs(formEl, '#bf-height').value || 0);
+      const neck = toIn(+qs(formEl, '#bf-neck').value || 0);
+      const waist = toIn(+qs(formEl, '#bf-waist').value || 0);
+      const hip = toIn(+qs(formEl, '#bf-hip').value || 0);
+      if (!height || !neck || !waist) { resultEl.innerHTML = emptyResult('Enter your measurements'); return; }
+      let bf;
+      if (sex === 'male') {
+        bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)) - 450;
+      } else {
+        bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(height)) - 450;
+      }
+      resultEl.innerHTML = heroBlock('Estimated body fat', `${fmtNum(bf, 1)}%`, sex === 'male' ? 'US Navy method (male)' : 'US Navy method (female)') +
+        `<div class="result-rows">${resultRow('Height', `${qs(formEl, '#bf-height').value} cm`)}${resultRow('Neck', `${qs(formEl, '#bf-neck').value} cm`)}${resultRow('Waist', `${qs(formEl, '#bf-waist').value} cm`)}</div>` +
+        infoNote('Uses the US Navy circumference method — a widely used field estimate, less accurate than DEXA or hydrostatic weighing. Measure waist at the navel and neck just below the larynx for best accuracy.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Running pace calculator ---------------- */
+CALCULATORS['pace-to-time'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your pace</h3>
+      <div class="field-row">
+        <div class="field"><label>Pace (min per km)</label><input type="number" step="0.01" id="pt-pace" value="5.5"></div>
+        <div class="field"><label>Distance (km)</label><input type="number" step="0.1" id="pt-dist" value="21.1"></div>
+      </div>`;
+    function calc() {
+      const pace = +qs(formEl, '#pt-pace').value || 0;
+      const dist = +qs(formEl, '#pt-dist').value || 0;
+      if (!pace || !dist) { resultEl.innerHTML = emptyResult('Enter pace and distance'); return; }
+      const totalMin = pace * dist;
+      const h = Math.floor(totalMin / 60), m = Math.floor(totalMin % 60), s = Math.round((totalMin % 1) * 60);
+      const timeStr = `${h > 0 ? h + ':' : ''}${String(m).padStart(h > 0 ? 2 : 1, '0')}:${String(s).padStart(2, '0')}`;
+      const paceMile = pace * 1.60934;
+      resultEl.innerHTML = heroBlock('Finish time', timeStr, `At ${pace} min/km over ${dist} km`) +
+        `<div class="result-rows">${resultRow('Pace per km', `${pace} min`)}${resultRow('Pace per mile', `${fmtNum(paceMile, 2)} min`)}${resultRow('Total distance', `${dist} km`)}</div>`;
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Daily water intake calculator ---------------- */
+CALCULATORS['water-intake'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your details</h3>
+      <div class="field-row">
+        <div class="field"><label>Weight (kg)</label><input type="number" id="wi-weight" value="75"></div>
+        <div class="field"><label>Activity level</label>
+          <div class="seg" data-seg="activity"><button data-value="low" class="active">Low</button><button data-value="moderate">Moderate</button><button data-value="high">High</button></div>
+        </div>
+      </div>`;
+    segControl(formEl, 'activity', calc);
+    function calc() {
+      const weight = +qs(formEl, '#wi-weight').value || 0;
+      const activity = segValue(formEl, 'activity');
+      if (!weight) { resultEl.innerHTML = emptyResult('Enter your weight'); return; }
+      const mlPerKg = activity === 'low' ? 30 : activity === 'moderate' ? 35 : 40;
+      const totalMl = weight * mlPerKg;
+      const litres = totalMl / 1000;
+      resultEl.innerHTML = heroBlock('Suggested daily intake', `${fmtNum(litres, 1)} L`, `≈ ${Math.round(litres / 0.25)} glasses (250ml)`) +
+        `<div class="result-rows">${resultRow('Body weight', `${weight} kg`)}${resultRow('Activity level', activity)}${resultRow('Suggested intake', `${fmtNum(litres, 1)} L`)}</div>` +
+        infoNote('A general guideline (roughly 30-40ml per kg of body weight, adjusted for activity), not personalised medical advice. Needs vary with climate, health conditions, pregnancy/breastfeeding and individual factors — consult a healthcare professional for specific guidance.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Heart rate zone calculator ---------------- */
+CALCULATORS['heart-rate-zone'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your age</h3>
+      <div class="field"><label>Age</label><input type="number" id="hr-age" value="35"></div>`;
+    function calc() {
+      const age = +qs(formEl, '#hr-age').value || 0;
+      if (!age) { resultEl.innerHTML = emptyResult('Enter your age'); return; }
+      const maxHR = 220 - age;
+      const zones = [
+        { name: 'Zone 1 — Very light', low: 0.50, high: 0.60 },
+        { name: 'Zone 2 — Light (fat burn)', low: 0.60, high: 0.70 },
+        { name: 'Zone 3 — Moderate (aerobic)', low: 0.70, high: 0.80 },
+        { name: 'Zone 4 — Hard (anaerobic)', low: 0.80, high: 0.90 },
+        { name: 'Zone 5 — Maximum', low: 0.90, high: 1.00 },
+      ];
+      resultEl.innerHTML = heroBlock('Estimated max heart rate', `${maxHR} bpm`, `220 − ${age}`) +
+        `<div class="result-rows">${zones.map(z => resultRow(z.name, `${Math.round(maxHR * z.low)}–${Math.round(maxHR * z.high)} bpm`)).join('')}</div>` +
+        infoNote('Uses the common 220-minus-age estimate for maximum heart rate, which is a population average with significant individual variation. For precise training zones, a lab-based or field max-HR test is more accurate.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
