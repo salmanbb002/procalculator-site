@@ -2236,3 +2236,149 @@ CALCULATORS['holiday-cost-splitter'] = {
     wireLiveCalc(formEl, calc);
   }
 };
+
+/* ---------------- Greggs sausage roll inflation tracker ---------------- */
+CALCULATORS['greggs-sausage-roll-inflation'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Price then vs now</h3>
+      <div class="field-row">
+        <div class="field"><label>Old price (£)</label><input type="number" step="0.01" id="gs-old" value="0.65"></div>
+        <div class="field"><label>Year</label><input type="number" id="gs-old-year" value="2010"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Current price (£)</label><input type="number" step="0.01" id="gs-new" value="1.30"></div>
+        <div class="field"><label>Year</label><input type="number" id="gs-new-year" value="2026"></div>
+      </div>`;
+    function calc() {
+      const oldP = +qs(formEl, '#gs-old').value || 0;
+      const newP = +qs(formEl, '#gs-new').value || 0;
+      const oldY = +qs(formEl, '#gs-old-year').value || 0;
+      const newY = +qs(formEl, '#gs-new-year').value || 0;
+      const years = newY - oldY;
+      if (!oldP || !newP || years <= 0) { resultEl.innerHTML = emptyResult('Enter both prices and years'); return; }
+      const pctChange = ((newP - oldP) / oldP) * 100;
+      const annualRate = (Math.pow(newP / oldP, 1 / years) - 1) * 100;
+      resultEl.innerHTML = heroBlock('Price increase', `+${fmtNum(pctChange, 0)}%`, `Over ${years} years`) +
+        `<div class="result-rows">${resultRow('Old price', fmtGBP(oldP))}${resultRow('New price', fmtGBP(newP))}${resultRow('Average annual increase', `${fmtNum(annualRate, 1)}%/year`)}</div>` +
+        infoNote('Enter your own remembered or researched prices — this tracks whatever two prices you provide, played for fun rather than using a verified official Greggs price history.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Beatles discography duration ---------------- */
+CALCULATORS['beatles-discography-duration'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Discography (or any artist/collection)</h3>
+      <div class="field-row">
+        <div class="field"><label>Number of albums</label><input type="number" id="bd-albums" value="13"></div>
+        <div class="field"><label>Average album length (minutes)</label><input type="number" id="bd-avg" value="35"></div>
+      </div>`;
+    function calc() {
+      const albums = +qs(formEl, '#bd-albums').value || 0;
+      const avg = +qs(formEl, '#bd-avg').value || 0;
+      if (!albums || !avg) { resultEl.innerHTML = emptyResult('Enter album count and average length'); return; }
+      const totalMin = albums * avg;
+      const hours = totalMin / 60;
+      resultEl.innerHTML = heroBlock('Total listening time', `${fmtNum(hours, 1)} hours`, `${albums} albums at ~${avg} min each`) +
+        `<div class="result-rows">${resultRow('Total albums', albums)}${resultRow('Total minutes', fmtNum(totalMin, 0))}${resultRow('Total hours', fmtNum(hours, 1))}</div>` +
+        infoNote('Enter your own album count and average length for any artist or collection — this is a general listening-time calculator, not based on a specific verified discography database.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Harry Potter reading time estimator ---------------- */
+CALCULATORS['harry-potter-reading-time'] = {
+  render(formEl, resultEl) {
+    const TOTAL_WORDS = 1084170; // commonly cited approximate total word count for the 7-book series
+    formEl.innerHTML = `
+      <h3>Your reading speed</h3>
+      <div class="field"><label>Words per minute</label><input type="number" id="hp-wpm" value="238"></div>
+      <p class="hint" style="margin-top:-8px">Average adult reading speed is roughly 200-260 wpm. The full 7-book series is commonly cited at around ${fmtNum(TOTAL_WORDS, 0)} words.</p>`;
+    function calc() {
+      const wpm = +qs(formEl, '#hp-wpm').value || 0;
+      if (!wpm) { resultEl.innerHTML = emptyResult('Enter your reading speed'); return; }
+      const totalMin = TOTAL_WORDS / wpm;
+      const hours = totalMin / 60;
+      const days = hours / 8; // assuming 8 hrs/day reading marathon, just for fun context
+      resultEl.innerHTML = heroBlock('Total reading time', `${fmtNum(hours, 1)} hours`, `≈ ${fmtNum(days, 1)} days at 8hrs/day`) +
+        `<div class="result-rows">${resultRow('Total words (all 7 books)', fmtNum(TOTAL_WORDS, 0))}${resultRow('Your reading speed', `${wpm} wpm`)}${resultRow('Total time', `${fmtNum(hours, 1)} hours`)}</div>` +
+        infoNote('Uses a commonly cited approximate total word count for the series and the reading speed you enter — a fun estimate, not an exact publisher-verified figure.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Wealth comparison (fun) ---------------- */
+CALCULATORS['royal-wealth-comparison'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Compare your savings</h3>
+      <div class="field-row">
+        <div class="field"><label>Your savings/net worth (£)</label><input type="number" id="rw-mine" value="5000"></div>
+        <div class="field"><label>Comparison wealth figure (£)</label><input type="number" id="rw-theirs" value="500000000"></div>
+      </div>
+      <p class="hint" style="margin-top:-8px">Enter any wealth figure you've seen reported to compare against — public estimates of individual or family wealth vary widely and aren't independently verifiable here.</p>`;
+    function calc() {
+      const mine = +qs(formEl, '#rw-mine').value || 0;
+      const theirs = +qs(formEl, '#rw-theirs').value || 0;
+      if (!mine || !theirs) { resultEl.innerHTML = emptyResult('Enter both figures'); return; }
+      const multiple = theirs / mine;
+      const yearsAt10kSaving = theirs / 10000;
+      resultEl.innerHTML = heroBlock('They have', `${fmtNum(multiple, 0)}× more`, 'than your current savings') +
+        `<div class="result-rows">${resultRow('Your savings', fmtGBP(mine))}${resultRow('Comparison figure', fmtGBP(theirs))}${resultRow('Years to match, saving £10k/yr', fmtNum(yearsAt10kSaving, 0))}</div>` +
+        infoNote('Just for fun — enter any wealth figure you\'ve seen reported. Public wealth estimates for individuals and families are just that (estimates), often vary hugely between sources, and aren\'t independently verified here.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Wedding cost vs house deposit ---------------- */
+CALCULATORS['wedding-vs-house-deposit'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Compare your numbers</h3>
+      <div class="field-row">
+        <div class="field"><label>Wedding budget (£)</label><input type="number" id="wh-wedding" value="18000"></div>
+        <div class="field"><label>Target house deposit (£)</label><input type="number" id="wh-deposit" value="30000"></div>
+      </div>`;
+    function calc() {
+      const wedding = +qs(formEl, '#wh-wedding').value || 0;
+      const deposit = +qs(formEl, '#wh-deposit').value || 0;
+      if (!wedding || !deposit) { resultEl.innerHTML = emptyResult('Enter both figures'); return; }
+      const pctOfDeposit = (wedding / deposit) * 100;
+      resultEl.innerHTML = heroBlock('Your wedding budget is', `${fmtNum(pctOfDeposit, 0)}%`, 'of your target house deposit') +
+        `<div class="result-rows">${resultRow('Wedding budget', fmtGBP(wedding))}${resultRow('Target house deposit', fmtGBP(deposit))}${resultRow('Difference', fmtGBP(Math.abs(deposit - wedding)))}</div>` +
+        infoNote('Enter your own actual or planned figures — a fun perspective check, not based on a fabricated "average" wedding or house price, since both vary hugely by location and choices.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Netflix binge time calculator ---------------- */
+CALCULATORS['netflix-binge-time'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your show</h3>
+      <div class="field-row">
+        <div class="field"><label>Number of episodes</label><input type="number" id="nb-episodes" value="24"></div>
+        <div class="field"><label>Average episode length (minutes)</label><input type="number" id="nb-length" value="45"></div>
+      </div>
+      <div class="field"><label>Hours you'll watch per day</label><input type="number" id="nb-perday" value="2"></div>`;
+    function calc() {
+      const episodes = +qs(formEl, '#nb-episodes').value || 0;
+      const length = +qs(formEl, '#nb-length').value || 0;
+      const perDay = +qs(formEl, '#nb-perday').value || 0;
+      if (!episodes || !length) { resultEl.innerHTML = emptyResult('Enter episode count and length'); return; }
+      const totalMin = episodes * length;
+      const totalHours = totalMin / 60;
+      const days = perDay ? totalHours / perDay : 0;
+      resultEl.innerHTML = heroBlock('Total binge time', `${fmtNum(totalHours, 1)} hours`, perDay ? `${fmtNum(days, 1)} days at ${perDay}hrs/day` : '') +
+        `<div class="result-rows">${resultRow('Episodes', episodes)}${resultRow('Total time', `${fmtNum(totalHours, 1)} hours`)}${resultRow('Days to finish', perDay ? fmtNum(days, 1) : '—')}</div>`;
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
