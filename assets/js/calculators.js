@@ -2084,3 +2084,155 @@ CALCULATORS['gcse-grade-boundary'] = {
     wireLiveCalc(formEl, calc);
   }
 };
+
+/* ---------------- Annual leave entitlement calculator ---------------- */
+CALCULATORS['annual-leave-entitlement'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your working pattern</h3>
+      <div class="field-row">
+        <div class="field"><label>Days worked per week</label><input type="number" step="0.5" id="al-days" value="5"></div>
+        <div class="field"><label>Full-time statutory minimum (days)</label><input type="number" id="al-fulltime" value="28"></div>
+      </div>`;
+    function calc() {
+      const days = +qs(formEl, '#al-days').value || 0;
+      const fulltime = +qs(formEl, '#al-fulltime').value || 0;
+      if (!days || !fulltime) { resultEl.innerHTML = emptyResult('Enter your working pattern'); return; }
+      const entitlement = (days / 5) * fulltime;
+      resultEl.innerHTML = heroBlock('Annual leave entitlement', `${fmtNum(entitlement, 1)} days`, `${days} days/week, pro-rated`) +
+        `<div class="result-rows">${resultRow('Full-time equivalent', `${fulltime} days`)}${resultRow('Your working pattern', `${days} days/week`)}${resultRow('Your entitlement', `${fmtNum(entitlement, 1)} days`)}</div>` +
+        infoNote('Uses simple pro-rata (days worked ÷ 5 × full-time entitlement). The UK statutory minimum is set by law and includes bank holidays within it — check gov.uk for the current statutory minimum and how your specific contract treats bank holidays.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Working days calculator ---------------- */
+CALCULATORS['working-days-between-dates'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Date range</h3>
+      <div class="field-row">
+        <div class="field"><label>Start date</label><input type="date" id="wd-start"></div>
+        <div class="field"><label>End date</label><input type="date" id="wd-end"></div>
+      </div>`;
+    const today = new Date();
+    qs(formEl, '#wd-start').value = today.toISOString().slice(0, 10);
+    const later = new Date(today); later.setDate(later.getDate() + 30);
+    qs(formEl, '#wd-end').value = later.toISOString().slice(0, 10);
+    function calc() {
+      const start = new Date(qs(formEl, '#wd-start').value);
+      const end = new Date(qs(formEl, '#wd-end').value);
+      if (isNaN(start) || isNaN(end) || end < start) { resultEl.innerHTML = emptyResult('Enter a valid date range'); return; }
+      let workingDays = 0, totalDays = 0;
+      const cur = new Date(start);
+      while (cur <= end) {
+        totalDays++;
+        const day = cur.getDay();
+        if (day !== 0 && day !== 6) workingDays++;
+        cur.setDate(cur.getDate() + 1);
+      }
+      resultEl.innerHTML = heroBlock('Working days', workingDays, `Out of ${totalDays} total days`) +
+        `<div class="result-rows">${resultRow('Total days', totalDays)}${resultRow('Working days (Mon-Fri)', workingDays)}${resultRow('Weekend days', totalDays - workingDays)}</div>` +
+        infoNote('Excludes Saturdays and Sundays only. Doesn\'t exclude bank holidays automatically — subtract those separately if needed for your specific date range and nation.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Countdown calculator ---------------- */
+CALCULATORS['countdown-to-date'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Target date</h3>
+      <div class="field"><label>Date and time</label><input type="datetime-local" id="cd-target"></div>`;
+    const target = new Date(); target.setDate(target.getDate() + 30);
+    qs(formEl, '#cd-target').value = target.toISOString().slice(0, 16);
+    function calc() {
+      const target = new Date(qs(formEl, '#cd-target').value);
+      if (isNaN(target)) { resultEl.innerHTML = emptyResult('Choose a target date and time'); return; }
+      const now = new Date();
+      const diffMs = target - now;
+      const isPast = diffMs < 0;
+      const absMs = Math.abs(diffMs);
+      const days = Math.floor(absMs / 86400000);
+      const hours = Math.floor((absMs % 86400000) / 3600000);
+      const minutes = Math.floor((absMs % 3600000) / 60000);
+      resultEl.innerHTML = heroBlock(isPast ? 'Time since' : 'Time remaining', `${days}d ${hours}h ${minutes}m`, isPast ? 'This date has passed' : 'Until your target date') +
+        `<div class="result-rows">${resultRow('Days', days)}${resultRow('Hours', hours)}${resultRow('Minutes', minutes)}</div>`;
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Timezone converter ---------------- */
+CALCULATORS['timezone-converter'] = {
+  render(formEl, resultEl) {
+    const ZONES = [
+      'Europe/London', 'Europe/Paris', 'America/New_York', 'America/Los_Angeles', 'America/Chicago',
+      'Asia/Dubai', 'Asia/Kolkata', 'Asia/Singapore', 'Asia/Tokyo', 'Australia/Sydney', 'Pacific/Auckland', 'UTC'
+    ];
+    formEl.innerHTML = `
+      <h3>Convert time</h3>
+      <div class="field-row">
+        <div class="field"><label>Date & time</label><input type="datetime-local" id="tz-datetime"></div>
+        <div class="field"><label>From timezone</label><select id="tz-from">${ZONES.map(z => `<option ${z === 'Europe/London' ? 'selected' : ''}>${z}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label>To timezone</label><select id="tz-to">${ZONES.map(z => `<option ${z === 'America/New_York' ? 'selected' : ''}>${z}</option>`).join('')}</select></div>`;
+    const now = new Date();
+    qs(formEl, '#tz-datetime').value = now.toISOString().slice(0, 16);
+    function calc() {
+      const dtVal = qs(formEl, '#tz-datetime').value;
+      const fromZone = qs(formEl, '#tz-from').value;
+      const toZone = qs(formEl, '#tz-to').value;
+      if (!dtVal) { resultEl.innerHTML = emptyResult('Choose a date and time'); return; }
+      try {
+        // Interpret the entered local time as if it occurred in the "from" zone
+        const [datePart, timePart] = dtVal.split('T');
+        const [y, mo, d] = datePart.split('-').map(Number);
+        const [h, mi] = timePart.split(':').map(Number);
+        // Find UTC instant matching that wall-clock time in fromZone via iterative offset lookup
+        let guess = new Date(Date.UTC(y, mo - 1, d, h, mi));
+        for (let i = 0; i < 3; i++) {
+          const parts = new Intl.DateTimeFormat('en-GB', { timeZone: fromZone, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).formatToParts(guess);
+          const get = t => +parts.find(p => p.type === t).value;
+          const asUTC = Date.UTC(get('year'), get('month') - 1, get('day'), get('hour') === 24 ? 0 : get('hour'), get('minute'));
+          const diff = Date.UTC(y, mo - 1, d, h, mi) - asUTC;
+          guess = new Date(guess.getTime() + diff);
+        }
+        const fmt = (zone) => new Intl.DateTimeFormat('en-GB', { timeZone: zone, dateStyle: 'medium', timeStyle: 'short' }).format(guess);
+        resultEl.innerHTML = heroBlock('Converted time', fmt(toZone), toZone) +
+          `<div class="result-rows">${resultRow(fromZone, fmt(fromZone))}${resultRow(toZone, fmt(toZone))}</div>` +
+          infoNote('Uses your browser\'s IANA timezone database, so daylight saving time is handled automatically and correctly for the date you choose.');
+      } catch (e) {
+        resultEl.innerHTML = emptyResult('Could not convert — check your date/time');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Holiday cost splitter ---------------- */
+CALCULATORS['holiday-cost-splitter'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Trip costs</h3>
+      <div class="field-row">
+        <div class="field"><label>Total trip cost</label><input type="number" id="hc-total" value="1800"></div>
+        <div class="field"><label>Number of travellers</label><input type="number" id="hc-people" value="4"></div>
+      </div>
+      <div class="field"><label>Any extra costs one person already covered</label><input type="number" id="hc-prepaid" value="0"></div>`;
+    function calc() {
+      const total = +qs(formEl, '#hc-total').value || 0;
+      const people = +qs(formEl, '#hc-people').value || 0;
+      const prepaid = +qs(formEl, '#hc-prepaid').value || 0;
+      if (!total || !people) { resultEl.innerHTML = emptyResult('Enter total cost and number of travellers'); return; }
+      const perPerson = total / people;
+      const owedByOthers = perPerson * (people - 1) - prepaid;
+      resultEl.innerHTML = heroBlock('Cost per person', fmtGBP(perPerson), `Split ${people} ways`) +
+        `<div class="result-rows">${resultRow('Total trip cost', fmtGBP(total))}${resultRow('Number of travellers', people)}${resultRow('Each person owes', fmtGBP(perPerson))}</div>` +
+        infoNote('Simple even split. For itemised splitting (where people paid different amounts for different things), you\'ll need to track individual contributions separately.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
