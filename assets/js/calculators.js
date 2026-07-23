@@ -763,3 +763,470 @@ CALCULATORS['time-with-parents'] = {
     wireLiveCalc(formEl, calc);
   }
 };
+
+/* ---------------- Stamp Duty Land Tax ---------------- */
+CALCULATORS['stamp-duty-land-tax'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Property details</h3>
+      <div class="field"><label>Purchase price</label><input type="number" id="sdlt-price" value="350000"></div>
+      <div class="field"><label>Buyer type</label>
+        <div class="seg" data-seg="type"><button data-value="standard" class="active">Standard</button><button data-value="ftb">First-time buyer</button><button data-value="additional">Additional property</button></div>
+      </div>`;
+    segControl(formEl, 'type', calc);
+    function bandTax(price, bands) {
+      let tax = 0, last = 0;
+      for (const [threshold, rate] of bands) {
+        if (price > last) { tax += (Math.min(price, threshold) - last) * rate; last = threshold; }
+        else break;
+      }
+      return tax;
+    }
+    function calc() {
+      const price = +qs(formEl, '#sdlt-price').value || 0;
+      const type = segValue(formEl, 'type');
+      if (!price) { resultEl.innerHTML = emptyResult('Enter the purchase price'); return; }
+      const standardBands = [[250000, 0], [925000, 0.05], [1500000, 0.10], [Infinity, 0.12]];
+      const ftbBands = [[425000, 0], [625000, 0.05]];
+      let tax;
+      if (type === 'ftb' && price <= 625000) {
+        tax = bandTax(price, ftbBands);
+      } else {
+        tax = bandTax(price, standardBands);
+        if (type === 'additional') tax += price * 0.05;
+      }
+      const effRate = price ? (tax / price) * 100 : 0;
+      resultEl.innerHTML = heroBlock('Estimated SDLT', fmtGBP(tax), `${fmtNum(effRate, 1)}% effective rate`) +
+        `<div class="result-rows">${resultRow('Purchase price', fmtGBP(price))}${resultRow('Buyer type', type === 'ftb' ? 'First-time buyer' : type === 'additional' ? 'Additional property' : 'Standard')}</div>` +
+        infoNote('Illustrative estimate using standard England/NI residential SDLT bands. Scotland (LBTT) and Wales (LTT) use different systems. Rates and thresholds change — always confirm on gov.uk before a purchase.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- ISA growth projection ---------------- */
+CALCULATORS['isa-growth-projection'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your ISA</h3>
+      <div class="field-row">
+        <div class="field"><label>Starting balance</label><input type="number" id="isa-start" value="5000"></div>
+        <div class="field"><label>Monthly contribution</label><input type="number" id="isa-monthly" value="200"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Growth rate (% p.a.)</label><input type="number" step="0.1" id="isa-rate" value="5"></div>
+        <div class="field"><label>Years</label><input type="number" id="isa-years" value="10"></div>
+      </div>`;
+    function calc() {
+      const start = +qs(formEl, '#isa-start').value || 0;
+      const monthly = +qs(formEl, '#isa-monthly').value || 0;
+      const rate = +qs(formEl, '#isa-rate').value || 0;
+      const years = +qs(formEl, '#isa-years').value || 0;
+      if (!years) { resultEl.innerHTML = emptyResult('Enter a projection period'); return; }
+      const monthlyRate = rate / 100 / 12;
+      const months = years * 12;
+      let balance = start;
+      let contributed = start;
+      for (let i = 0; i < months; i++) {
+        balance = balance * (1 + monthlyRate) + monthly;
+        contributed += monthly;
+      }
+      const growth = balance - contributed;
+      resultEl.innerHTML = heroBlock('Projected balance', fmtGBP(balance), `After ${years} years`) +
+        `<div class="result-rows">${resultRow('Total contributed', fmtGBP(contributed))}${resultRow('Estimated growth', fmtGBP(growth))}</div>` +
+        infoNote(`Contributions above £${fmtNum(20000,0)}/year exceed the standard annual ISA allowance — check the current allowance on gov.uk. Growth rate is illustrative, not guaranteed.`);
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Pension pot projection ---------------- */
+CALCULATORS['pension-pot-projection'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your pension</h3>
+      <div class="field-row">
+        <div class="field"><label>Current age</label><input type="number" id="pp-age" value="35"></div>
+        <div class="field"><label>Retirement age</label><input type="number" id="pp-retire" value="67"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Current pot</label><input type="number" id="pp-pot" value="20000"></div>
+        <div class="field"><label>Monthly contribution (you + employer)</label><input type="number" id="pp-monthly" value="300"></div>
+      </div>
+      <div class="field"><label>Growth rate (% p.a.)</label><input type="number" step="0.1" id="pp-rate" value="5"></div>`;
+    function calc() {
+      const age = +qs(formEl, '#pp-age').value || 0;
+      const retire = +qs(formEl, '#pp-retire').value || 0;
+      const pot = +qs(formEl, '#pp-pot').value || 0;
+      const monthly = +qs(formEl, '#pp-monthly').value || 0;
+      const rate = +qs(formEl, '#pp-rate').value || 0;
+      const years = retire - age;
+      if (years <= 0) { resultEl.innerHTML = emptyResult('Retirement age must be after current age'); return; }
+      const monthlyRate = rate / 100 / 12;
+      let balance = pot;
+      let contributed = pot;
+      for (let i = 0; i < years * 12; i++) {
+        balance = balance * (1 + monthlyRate) + monthly;
+        contributed += monthly;
+      }
+      resultEl.innerHTML = heroBlock('Projected pot at retirement', fmtGBP(balance), `In ${years} years, aged ${retire}`) +
+        `<div class="result-rows">${resultRow('Total contributed', fmtGBP(contributed))}${resultRow('Estimated growth', fmtGBP(balance - contributed))}</div>` +
+        infoNote('Illustrative projection only — real pension growth depends on fund performance, fees and charges, which vary significantly. Not financial advice.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Self-employed tax ---------------- */
+CALCULATORS['self-employed-tax'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your profit</h3>
+      <div class="field"><label>Annual profit (after expenses)</label><input type="number" id="se-profit" value="35000"></div>`;
+    function calc() {
+      const profit = +qs(formEl, '#se-profit').value || 0;
+      if (!profit) { resultEl.innerHTML = emptyResult('Enter your annual profit'); return; }
+      const personalAllowance = profit > 100000 ? Math.max(0, 12570 - (profit - 100000) / 2) : 12570;
+      const basicBand = 50270, higherBand = 125140;
+      const taxable = Math.max(0, profit - personalAllowance);
+      const basicPortion = Math.min(taxable, Math.max(0, basicBand - personalAllowance));
+      const higherPortion = Math.min(Math.max(0, taxable - basicPortion), Math.max(0, higherBand - basicBand));
+      const additionalPortion = Math.max(0, taxable - basicPortion - higherPortion);
+      const incomeTax = basicPortion * 0.20 + higherPortion * 0.40 + additionalPortion * 0.45;
+
+      const class4Lower = 12570, class4Upper = 50270;
+      let class4 = 0;
+      if (profit > class4Lower) {
+        class4 += (Math.min(profit, class4Upper) - class4Lower) * 0.06;
+        if (profit > class4Upper) class4 += (profit - class4Upper) * 0.02;
+      }
+      const totalDue = incomeTax + class4;
+      const takeHome = profit - totalDue;
+      resultEl.innerHTML = heroBlock('Estimated tax + Class 4 NI', fmtGBP(totalDue), `Leaves ${fmtGBP(takeHome)} take-home`) +
+        `<div class="result-rows">${resultRow('Income Tax', fmtGBP(incomeTax))}${resultRow('Class 4 NI', fmtGBP(class4))}${resultRow('Estimated take-home', fmtGBP(takeHome))}</div>` +
+        infoNote('Simplified estimate using standard England/Wales/NI bands. Class 2 NI rules have changed in recent years — check current gov.uk guidance. Excludes allowable expenses already deducted, student loans and Scottish rates. Not tax advice.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Capital Gains Tax ---------------- */
+CALCULATORS['capital-gains-tax'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your gain</h3>
+      <div class="field"><label>Asset type</label>
+        <div class="seg" data-seg="asset"><button data-value="other" class="active">Shares / other assets</button><button data-value="property">Residential property</button></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Total gain</label><input type="number" id="cgt-gain" value="15000"></div>
+        <div class="field"><label>Tax-free allowance</label><input type="number" id="cgt-allowance" value="3000"></div>
+      </div>
+      <div class="field"><label>Your tax band</label>
+        <div class="seg" data-seg="band"><button data-value="basic" class="active">Basic rate</button><button data-value="higher">Higher/additional rate</button></div>
+      </div>`;
+    segControl(formEl, 'asset', calc);
+    segControl(formEl, 'band', calc);
+    function calc() {
+      const gain = +qs(formEl, '#cgt-gain').value || 0;
+      const allowance = +qs(formEl, '#cgt-allowance').value || 0;
+      const asset = segValue(formEl, 'asset');
+      const band = segValue(formEl, 'band');
+      const taxableGain = Math.max(0, gain - allowance);
+      let rate;
+      if (asset === 'property') rate = band === 'higher' ? 0.24 : 0.18;
+      else rate = band === 'higher' ? 0.20 : 0.10;
+      const tax = taxableGain * rate;
+      resultEl.innerHTML = heroBlock('Estimated CGT owed', fmtGBP(tax), `${fmtNum(rate * 100, 0)}% on ${fmtGBP(taxableGain)} taxable gain`) +
+        `<div class="result-rows">${resultRow('Total gain', fmtGBP(gain))}${resultRow('Tax-free allowance used', fmtGBP(Math.min(gain, allowance)))}${resultRow('Taxable gain', fmtGBP(taxableGain))}</div>` +
+        infoNote('Illustrative estimate — CGT rates and the annual exempt amount change and depend on your total taxable income. Always check current gov.uk rates and consider professional advice for significant disposals.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Inheritance Tax ---------------- */
+CALCULATORS['inheritance-tax'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Estate details</h3>
+      <div class="field"><label>Total estate value</label><input type="number" id="iht-estate" value="500000"></div>
+      <div class="field"><label>Include main residence to direct descendants?</label>
+        <div class="seg" data-seg="residence"><button data-value="yes" class="active">Yes</button><button data-value="no">No</button></div>
+      </div>`;
+    segControl(formEl, 'residence', calc);
+    function calc() {
+      const estate = +qs(formEl, '#iht-estate').value || 0;
+      const residence = segValue(formEl, 'residence');
+      const nilRateBand = 325000;
+      const residenceNilRateBand = residence === 'yes' ? Math.max(0, 175000 - Math.max(0, (estate - 2000000) / 2)) : 0;
+      const totalAllowance = nilRateBand + residenceNilRateBand;
+      const taxableEstate = Math.max(0, estate - totalAllowance);
+      const tax = taxableEstate * 0.40;
+      resultEl.innerHTML = heroBlock('Estimated IHT due', fmtGBP(tax), `40% on ${fmtGBP(taxableEstate)} above allowances`) +
+        `<div class="result-rows">${resultRow('Estate value', fmtGBP(estate))}${resultRow('Nil-rate band', fmtGBP(nilRateBand))}${resultRow('Residence nil-rate band', fmtGBP(residenceNilRateBand))}${resultRow('Taxable estate', fmtGBP(taxableEstate))}</div>` +
+        infoNote('Illustrative estimate only — IHT has many reliefs and exemptions (spousal transfer, gifts, business/agricultural relief) not included here. Thresholds change. Seek professional advice for actual estate planning.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Credit card payoff ---------------- */
+CALCULATORS['credit-card-payoff'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your balance</h3>
+      <div class="field-row">
+        <div class="field"><label>Current balance</label><input type="number" id="cc-balance" value="2500"></div>
+        <div class="field"><label>APR (%)</label><input type="number" step="0.1" id="cc-apr" value="24.9"></div>
+      </div>
+      <div class="field"><label>Monthly payment</label><input type="number" id="cc-payment" value="150"></div>`;
+    function calc() {
+      const balance = +qs(formEl, '#cc-balance').value || 0;
+      const apr = +qs(formEl, '#cc-apr').value || 0;
+      const payment = +qs(formEl, '#cc-payment').value || 0;
+      if (!balance || !payment) { resultEl.innerHTML = emptyResult('Enter your balance and monthly payment'); return; }
+      const monthlyRate = apr / 100 / 12;
+      const minPaymentNeeded = balance * monthlyRate;
+      if (payment <= minPaymentNeeded) {
+        resultEl.innerHTML = heroBlock('Payment too low', '—', 'This payment never clears the balance') +
+          infoNote(`At ${apr}% APR, interest alone costs ${fmtGBP(minPaymentNeeded)}/month — increase your monthly payment above this to make progress.`);
+        return;
+      }
+      let bal = balance, months = 0, totalPaid = 0;
+      while (bal > 0 && months < 1200) {
+        const interest = bal * monthlyRate;
+        const principal = Math.min(bal, payment - interest);
+        bal -= principal;
+        totalPaid += Math.min(payment, principal + interest);
+        months++;
+      }
+      const totalInterest = totalPaid - balance;
+      const years = Math.floor(months / 12), remMonths = months % 12;
+      resultEl.innerHTML = heroBlock('Time to pay off', `${months} months`, `${years > 0 ? years + 'y ' : ''}${remMonths}m at ${fmtGBP(payment)}/month`) +
+        `<div class="result-rows">${resultRow('Starting balance', fmtGBP(balance))}${resultRow('Total interest paid', fmtGBP(totalInterest))}${resultRow('Total repaid', fmtGBP(totalPaid))}</div>` +
+        infoNote('Assumes no further spending on the card and a fixed monthly payment. Real card interest calculations vary by provider (daily vs monthly compounding).');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- 50/30/20 Budget Planner ---------------- */
+CALCULATORS['budget-50-30-20'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your income</h3>
+      <div class="field"><label>Monthly take-home pay</label><input type="number" id="b502-income" value="2400"></div>`;
+    function calc() {
+      const income = +qs(formEl, '#b502-income').value || 0;
+      if (!income) { resultEl.innerHTML = emptyResult('Enter your monthly take-home pay'); return; }
+      const needs = income * 0.50, wants = income * 0.30, savings = income * 0.20;
+      resultEl.innerHTML = heroBlock('Monthly savings target', fmtGBP(savings), '20% of take-home pay') +
+        `<div class="result-rows">${resultRow('Needs (50%)', fmtGBP(needs))}${resultRow('Wants (30%)', fmtGBP(wants))}${resultRow('Savings (20%)', fmtGBP(savings))}</div>` +
+        infoNote('A popular budgeting guideline, not a fixed rule — adjust the split to fit your circumstances, especially in higher cost-of-living areas.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Sand & cement render mix ---------------- */
+CALCULATORS['sand-cement-render-mix'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Wall to render</h3>
+      <div class="field-row">
+        <div class="field"><label>Wall area (m²)</label><input type="number" id="rm-area" value="20"></div>
+        <div class="field"><label>Render thickness (mm)</label><input type="number" id="rm-thick" value="12"></div>
+      </div>
+      <div class="field"><label>Mix ratio (cement : sand)</label>
+        <div class="seg" data-seg="ratio"><button data-value="1:3" class="active">1:3</button><button data-value="1:4">1:4</button><button data-value="1:5">1:5</button></div>
+      </div>`;
+    segControl(formEl, 'ratio', calc);
+    function calc() {
+      const area = +qs(formEl, '#rm-area').value || 0;
+      const thickMm = +qs(formEl, '#rm-thick').value || 0;
+      const ratio = segValue(formEl, 'ratio');
+      if (!area || !thickMm) { resultEl.innerHTML = emptyResult('Enter wall area and thickness'); return; }
+      const volume = area * (thickMm / 1000); // m3
+      const wetVolume = volume * 1.3; // allow for compaction/waste
+      const parts = ratio === '1:3' ? 4 : ratio === '1:4' ? 5 : 6;
+      const cementVolume = wetVolume / parts;
+      const sandVolume = wetVolume - cementVolume;
+      const cementBags = cementVolume * 1440 / 25; // ~1440kg/m3 dry cement, 25kg bags
+      resultEl.innerHTML = heroBlock('Cement bags needed', `${fmtNum(Math.ceil(cementBags), 0)} bags`, `25kg bags, ${ratio} mix`) +
+        `<div class="result-rows">${resultRow('Render volume', `${fmtNum(volume, 3)} m³`)}${resultRow('Cement volume', `${fmtNum(cementVolume, 3)} m³`)}${resultRow('Sand volume', `${fmtNum(sandVolume, 3)} m³`)}</div>` +
+        infoNote("Estimate includes an allowance for compaction and waste. Always check the specific product manufacturer's mixing guidance for structural or exterior render work.");
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- House extension cost estimator ---------------- */
+CALCULATORS['house-extension-cost'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Extension details</h3>
+      <div class="field-row">
+        <div class="field"><label>Floor area (m²)</label><input type="number" id="hx-area" value="20"></div>
+        <div class="field"><label>Storeys</label>
+          <div class="seg" data-seg="storeys"><button data-value="1" class="active">Single</button><button data-value="2">Double</button></div>
+        </div>
+      </div>
+      <div class="field"><label>Estimated cost per m² (your local build rate)</label><input type="number" id="hx-rate" value="2200"></div>
+      <div class="field"><label>Additional costs (fit-out, fees, etc.)</label><input type="number" id="hx-extra" value="8000"></div>`;
+    segControl(formEl, 'storeys', calc);
+    function calc() {
+      const area = +qs(formEl, '#hx-area').value || 0;
+      const rate = +qs(formEl, '#hx-rate').value || 0;
+      const storeys = +segValue(formEl, 'storeys') || 1;
+      const extra = +qs(formEl, '#hx-extra').value || 0;
+      if (!area || !rate) { resultEl.innerHTML = emptyResult('Enter floor area and cost per m²'); return; }
+      const buildCost = area * rate * storeys;
+      const total = buildCost + extra;
+      resultEl.innerHTML = heroBlock('Estimated total cost', fmtGBP(total), `${area}m² × ${storeys} storey(s)`) +
+        `<div class="result-rows">${resultRow('Build cost', fmtGBP(buildCost))}${resultRow('Additional costs', fmtGBP(extra))}${resultRow('Cost per m² (all-in)', fmtGBP(total / area))}</div>` +
+        infoNote('Build costs per m² vary hugely by region, specification and builder — the default is illustrative only. Get quotes from local builders for an accurate figure, and budget a contingency of 10-15% on top.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Fencing cost calculator ---------------- */
+CALCULATORS['fencing-cost'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Fence run</h3>
+      <div class="field-row">
+        <div class="field"><label>Fence length (m)</label><input type="number" id="fc-length" value="20"></div>
+        <div class="field"><label>Panel width (m)</label><input type="number" step="0.1" id="fc-panel-w" value="1.83"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Panel price (£ each)</label><input type="number" id="fc-panel-price" value="35"></div>
+        <div class="field"><label>Post price (£ each)</label><input type="number" id="fc-post-price" value="12"></div>
+      </div>`;
+    function calc() {
+      const length = +qs(formEl, '#fc-length').value || 0;
+      const panelW = +qs(formEl, '#fc-panel-w').value || 0;
+      const panelPrice = +qs(formEl, '#fc-panel-price').value || 0;
+      const postPrice = +qs(formEl, '#fc-post-price').value || 0;
+      if (!length || !panelW) { resultEl.innerHTML = emptyResult('Enter fence length and panel width'); return; }
+      const panels = Math.ceil(length / panelW);
+      const posts = panels + 1;
+      const totalCost = panels * panelPrice + posts * postPrice;
+      resultEl.innerHTML = heroBlock('Estimated material cost', fmtGBP(totalCost), `${panels} panels, ${posts} posts`) +
+        `<div class="result-rows">${resultRow('Panels needed', panels)}${resultRow('Posts needed', posts)}${resultRow('Panel cost', fmtGBP(panels * panelPrice))}${resultRow('Post cost', fmtGBP(posts * postPrice))}</div>` +
+        infoNote('Excludes concrete/postcrete, gravel boards, fixings and labour. Uses the unit prices you enter — check current prices with your local merchant.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Insulation U-value calculator ---------------- */
+CALCULATORS['insulation-u-value'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Build-up</h3>
+      <div class="field"><label>Existing structure thermal resistance (m²K/W)</label><input type="number" step="0.01" id="uv-existing" value="0.5"></div>
+      <div class="field-row">
+        <div class="field"><label>Insulation thickness (mm)</label><input type="number" id="uv-thick" value="100"></div>
+        <div class="field"><label>Insulation conductivity (W/mK)</label><input type="number" step="0.001" id="uv-conductivity" value="0.035"></div>
+      </div>`;
+    function calc() {
+      const existingR = +qs(formEl, '#uv-existing').value || 0;
+      const thickMm = +qs(formEl, '#uv-thick').value || 0;
+      const conductivity = +qs(formEl, '#uv-conductivity').value || 0;
+      if (!thickMm || !conductivity) { resultEl.innerHTML = emptyResult('Enter insulation thickness and conductivity'); return; }
+      const insulationR = (thickMm / 1000) / conductivity;
+      const surfaceR = 0.17; // typical combined internal+external surface resistance allowance
+      const totalR = existingR + insulationR + surfaceR;
+      const uValue = 1 / totalR;
+      resultEl.innerHTML = heroBlock('Estimated U-value', `${fmtNum(uValue, 2)} W/m²K`, 'Lower is better insulated') +
+        `<div class="result-rows">${resultRow('Insulation resistance', `${fmtNum(insulationR, 2)} m²K/W`)}${resultRow('Existing structure resistance', `${fmtNum(existingR, 2)} m²K/W`)}${resultRow('Total resistance', `${fmtNum(totalR, 2)} m²K/W`)}</div>` +
+        infoNote('Simplified single-layer estimate with a standard surface resistance allowance. Real build-ups have multiple layers and cavities — for Building Regulations compliance, use a full calculation from your insulation manufacturer or a qualified assessor.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Roof tile quantity calculator ---------------- */
+CALCULATORS['roof-tile-quantity'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Roof area</h3>
+      <div class="field-row">
+        <div class="field"><label>Roof area (m²)</label><input type="number" id="rt-area" value="80"></div>
+        <div class="field"><label>Tiles per m²</label><input type="number" step="0.1" id="rt-per-m2" value="10"></div>
+      </div>
+      <div class="field"><label>Waste allowance (%)</label><input type="number" id="rt-waste" value="5"></div>`;
+    function calc() {
+      const area = +qs(formEl, '#rt-area').value || 0;
+      const perM2 = +qs(formEl, '#rt-per-m2').value || 0;
+      const waste = +qs(formEl, '#rt-waste').value || 0;
+      if (!area || !perM2) { resultEl.innerHTML = emptyResult('Enter roof area and tiles per m²'); return; }
+      const baseTiles = area * perM2;
+      const totalTiles = Math.ceil(baseTiles * (1 + waste / 100));
+      resultEl.innerHTML = heroBlock('Tiles needed', `${fmtNum(totalTiles, 0)} tiles`, `Incl. ${waste}% waste allowance`) +
+        `<div class="result-rows">${resultRow('Roof area', `${area} m²`)}${resultRow('Base quantity', fmtNum(Math.ceil(baseTiles), 0))}${resultRow('With waste allowance', fmtNum(totalTiles, 0))}</div>` +
+        infoNote("Tiles-per-m² varies by tile profile and gauge — check your specific tile manufacturer's coverage rate for an accurate figure. Excludes ridge, hip and verge tiles.");
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Plasterboard quantity calculator ---------------- */
+CALCULATORS['plasterboard-quantity'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Room dimensions</h3>
+      <div class="field-row">
+        <div class="field"><label>Room length (m)</label><input type="number" step="0.1" id="pb-length" value="4"></div>
+        <div class="field"><label>Room width (m)</label><input type="number" step="0.1" id="pb-width" value="3.5"></div>
+      </div>
+      <div class="field"><label>Wall height (m)</label><input type="number" step="0.1" id="pb-height" value="2.4"></div>
+      <div class="field"><label>Include ceiling?</label>
+        <div class="seg" data-seg="ceiling"><button data-value="yes" class="active">Yes</button><button data-value="no">No</button></div>
+      </div>`;
+    segControl(formEl, 'ceiling', calc);
+    function calc() {
+      const length = +qs(formEl, '#pb-length').value || 0;
+      const width = +qs(formEl, '#pb-width').value || 0;
+      const height = +qs(formEl, '#pb-height').value || 0;
+      const ceiling = segValue(formEl, 'ceiling');
+      if (!length || !width || !height) { resultEl.innerHTML = emptyResult('Enter room dimensions'); return; }
+      const wallArea = 2 * (length + width) * height;
+      const ceilingArea = ceiling === 'yes' ? length * width : 0;
+      const totalArea = wallArea + ceilingArea;
+      const sheetArea = 2.4 * 1.2; // standard sheet size m2
+      const sheets = Math.ceil(totalArea / sheetArea * 1.1); // 10% waste
+      resultEl.innerHTML = heroBlock('Sheets needed', `${sheets} sheets`, `2400×1200mm standard sheets, incl. 10% waste`) +
+        `<div class="result-rows">${resultRow('Wall area', `${fmtNum(wallArea, 1)} m²`)}${resultRow('Ceiling area', `${fmtNum(ceilingArea, 1)} m²`)}${resultRow('Total area', `${fmtNum(totalArea, 1)} m²`)}</div>` +
+        infoNote('Excludes door and window openings (which would reduce the total slightly) and assumes standard 2400×1200mm sheets — adjust if using a different sheet size.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Skip size selector ---------------- */
+CALCULATORS['skip-size'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your waste</h3>
+      <div class="field"><label>Estimated waste volume (m³)</label><input type="number" step="0.1" id="sk-volume" value="4"></div>`;
+    const SKIPS = [
+      { name: 'Mini skip', size: '2 yd³ (~1.5 m³)', m3: 1.5 },
+      { name: 'Midi skip', size: '4 yd³ (~3 m³)', m3: 3 },
+      { name: 'Builders skip', size: '6 yd³ (~4.5 m³)', m3: 4.5 },
+      { name: 'Large skip', size: '8 yd³ (~6 m³)', m3: 6 },
+      { name: 'Roll-on-roll-off', size: '12-40 yd³ (~9-30 m³)', m3: 9 },
+    ];
+    function calc() {
+      const volume = +qs(formEl, '#sk-volume').value || 0;
+      if (!volume) { resultEl.innerHTML = emptyResult('Enter your estimated waste volume'); return; }
+      const recommended = SKIPS.find(s => s.m3 >= volume) || SKIPS[SKIPS.length - 1];
+      resultEl.innerHTML = heroBlock('Recommended skip', recommended.name, recommended.size) +
+        `<div class="result-rows">${SKIPS.map(s => resultRow(s.name, s.size)).join('')}</div>` +
+        infoNote('Standard UK skip size categories — never fill a skip above its rim (this is illegal on the public highway) and check local permit requirements if placing a skip on the road.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
