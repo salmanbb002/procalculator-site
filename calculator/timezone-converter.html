@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Timezone Converter · Pro Calculator UK</title>
-<meta name="description" content="Convert a time between UK and international timezones.">
+<meta name="description" content="Timezone converter with DST support. Convert any date and time between UK and international timezones, handling daylight saving automatically.">
 <meta name="keywords" content="timezone converter, uk timezone converter, free timezone converter, timezone converter uk">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://procalculator.site/calculator/timezone-converter">
@@ -12,11 +12,11 @@
 <meta property="og:site_name" content="Pro Calculator UK">
 <meta property="og:locale" content="en_GB">
 <meta property="og:title" content="Timezone Converter · Pro Calculator UK">
-<meta property="og:description" content="Convert a time between UK and international timezones.">
+<meta property="og:description" content="Timezone converter with DST support. Convert any date and time between UK and international timezones, handling daylight saving automatically.">
 <meta property="og:url" content="https://procalculator.site/calculator/timezone-converter">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Timezone Converter · Pro Calculator UK">
-<meta name="twitter:description" content="Convert a time between UK and international timezones.">
+<meta name="twitter:description" content="Timezone converter with DST support. Convert any date and time between UK and international timezones, handling daylight saving automatically.">
 <script type="application/ld+json" id="ld-breadcrumb">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://procalculator.site/"},{"@type":"ListItem","position":2,"name":"Time Calculators","item":"https://procalculator.site/calculators/time"},{"@type":"ListItem","position":3,"name":"Timezone Converter","item":"https://procalculator.site/calculator/timezone-converter"}]}</script>
 <script type="application/ld+json" id="ld-faq">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does this account for daylight saving time automatically?","acceptedAnswer":{"@type":"Answer","text":"Yes \u2014 it uses the IANA timezone database (the same standard data most software relies on), which correctly tracks each region's specific daylight saving rules and transition dates, rather than assuming a fixed offset."}},{"@type":"Question","name":"Why might two timezone converters give different answers for the same conversion?","acceptedAnswer":{"@type":"Answer","text":"This usually happens when one tool uses a simplified fixed offset instead of proper timezone database lookups \u2014 this is most likely to cause a discrepancy around daylight saving clock-change periods, when the correct offset temporarily differs from the 'usual' one."}}]}</script>
 <script type="application/ld+json" id="ld-webapp">{"@context":"https://schema.org","@type":"WebApplication","name":"Timezone Converter","url":"https://procalculator.site/calculator/timezone-converter","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"GBP"}}</script>
@@ -103,7 +103,9 @@
 
   <section class="section">
     <div class="container prose" style="max-width:800px">
-      <h2 style="border-top:none;padding-top:0">How it works</h2>
+      <h2 style="border-top:none;padding-top:0">What is the Timezone Converter?</h2>
+      <p>A timezone converter translates a specific date and time from one timezone into the equivalent moment in another, correctly accounting for daylight saving time on the specific date you choose. It works using the IANA timezone database (the same system used by phones and computers worldwide), which stores the exact historical and future daylight-saving rules for each named zone, so a conversion in July (British Summer Time) and a conversion in January (GMT) are handled with the correct offset automatically, rather than using a single fixed UTC offset that would be wrong for half the year. To convert manually, you'd need to know both zones' current UTC offset for that specific date (checking whether daylight saving is in effect in each), then add or subtract the difference — this is exactly what the automated lookup avoids you having to do.</p>
+      <h2>How it works</h2>
       <p>This converts a date and time from one timezone to another using your browser's built-in IANA timezone database — the same authoritative timezone data used across most modern software — which means daylight saving time transitions are handled correctly and automatically for the specific date you're converting, not just a fixed offset that would be wrong for part of the year.</p>
       <h2>UK context</h2>
       <p>A common mistake with simpler timezone tools is using a fixed offset (like "UK is always UTC or UTC+1") — but the UK, like many countries, shifts between standard time and daylight saving time across the year, and the offset to other timezones changes accordingly. Because different countries also change their own clocks on different dates (or not at all), a fixed-offset approach can be wrong for weeks at a time around clock-change periods — using proper timezone database lookups (as this tool does) avoids that entirely.</p>
