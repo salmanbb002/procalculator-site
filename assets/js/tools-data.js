@@ -100,17 +100,17 @@ const TOOLS = [
   // ---------------- SCIENCE ----------------
   { id: 'unit-converter', title: 'Unit Converter', category: 'science', icon: '🔁', badge: 'new', functional: true,
     desc: 'Convert length, weight and temperature between metric and imperial.', tags: ['unit converter', 'length', 'weight', 'temperature', 'metric', 'imperial'] },
-  { id: 'earth-curvature', title: 'Earth Curvature Calculator', category: 'science', icon: '🌍', functional: false,
+  { id: 'earth-curvature', title: 'Earth Curvature Calculator', category: 'science', icon: '🌍', functional: true,
     desc: 'Calculate how much the Earth curves over a given distance.', tags: ['earth curve', 'curvature', 'horizon'] },
-  { id: 'wavelength-frequency', title: 'Wavelength & Frequency Calculator', category: 'science', icon: '〰️', functional: false,
+  { id: 'wavelength-frequency', title: 'Wavelength & Frequency Calculator', category: 'science', icon: '〰️', functional: true,
     desc: 'Convert between wavelength and frequency for any wave.', tags: ['wavelength', 'frequency', 'physics'] },
-  { id: 'resistor-color-code', title: 'Resistor Colour Code Calculator', category: 'science', icon: '🎛️', functional: false,
+  { id: 'resistor-color-code', title: 'Resistor Colour Code Calculator', category: 'science', icon: '🎛️', functional: true,
     desc: 'Decode resistor colour bands into resistance values.', tags: ['resistor', 'colour code', 'electronics'] },
-  { id: 'dilution-calculator', title: 'Dilution Calculator (C1V1=C2V2)', category: 'science', icon: '🧪', functional: false,
+  { id: 'dilution-calculator', title: 'Dilution Calculator (C1V1=C2V2)', category: 'science', icon: '🧪', functional: true,
     desc: 'Work out dilution volumes for a target concentration.', tags: ['dilution', 'concentration', 'chemistry'] },
-  { id: 'moment-of-force', title: 'Moment of Force Calculator', category: 'science', icon: '🔧', functional: false,
+  { id: 'moment-of-force', title: 'Moment of Force Calculator', category: 'science', icon: '🔧', functional: true,
     desc: 'Calculate the turning moment of a force about a pivot.', tags: ['moment', 'force', 'torque'] },
-  { id: 'escape-velocity', title: 'Escape Velocity Calculator', category: 'science', icon: '🚀', functional: false,
+  { id: 'escape-velocity', title: 'Escape Velocity Calculator', category: 'science', icon: '🚀', functional: true,
     desc: 'Calculate escape velocity for a given mass and radius.', tags: ['escape velocity', 'physics', 'space'] },
 
   // ---------------- HEALTH ----------------

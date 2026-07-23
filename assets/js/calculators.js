@@ -1544,3 +1544,197 @@ CALCULATORS['log-calculator'] = {
     wireLiveCalc(formEl, calc);
   }
 };
+
+/* ---------------- Earth curvature calculator ---------------- */
+CALCULATORS['earth-curvature'] = {
+  render(formEl, resultEl) {
+    const EARTH_RADIUS_KM = 6371;
+    formEl.innerHTML = `
+      <h3>Distance</h3>
+      <div class="field"><label>Distance (km)</label><input type="number" id="ec-dist" value="10"></div>`;
+    function calc() {
+      const distKm = +qs(formEl, '#ec-dist').value || 0;
+      if (!distKm) { resultEl.innerHTML = emptyResult('Enter a distance'); return; }
+      const dropM = Math.pow(distKm * 1000, 2) / (2 * EARTH_RADIUS_KM * 1000);
+      const dropMRefracted = dropM * 0.87; // standard atmospheric refraction correction (~13% reduction)
+      resultEl.innerHTML = heroBlock('Curvature drop', `${fmtNum(dropM, 1)} m`, `Over ${distKm} km, ignoring refraction`) +
+        `<div class="result-rows">${resultRow('Geometric drop', `${fmtNum(dropM, 1)} m`)}${resultRow('With typical atmospheric refraction', `${fmtNum(dropMRefracted, 1)} m`)}</div>` +
+        infoNote('Uses the simple flat-Earth-chord approximation (accurate for terrestrial distances) with Earth\'s mean radius. Atmospheric refraction varies with weather/temperature, so the refracted figure is an illustrative typical correction, not exact.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Wavelength & frequency calculator ---------------- */
+CALCULATORS['wavelength-frequency'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Wave details</h3>
+      <div class="field"><label>Wave type</label>
+        <div class="seg" data-seg="type"><button data-value="light" class="active">Light/EM wave</button><button data-value="sound">Sound</button></div>
+      </div>
+      <div class="field" data-group="sound" style="display:none"><label>Wave speed (m/s)</label><input type="number" id="wf-speed" value="343"></div>
+      <div class="field"><label>Mode</label>
+        <div class="seg" data-seg="mode"><button data-value="freq" class="active">I know frequency (Hz)</button><button data-value="wave">I know wavelength (m)</button></div>
+      </div>
+      <div class="field" data-group="freq"><label>Frequency (Hz)</label><input type="number" id="wf-freq" value="500000000000000"></div>
+      <div class="field" data-group="wave" style="display:none"><label>Wavelength (m)</label><input type="number" id="wf-wave" value="0.0000006"></div>`;
+    segControl(formEl, 'type', () => { formEl.querySelector('[data-group="sound"]').style.display = segValue(formEl, 'type') === 'sound' ? '' : 'none'; calc(); });
+    segControl(formEl, 'mode', () => {
+      const mode = segValue(formEl, 'mode');
+      formEl.querySelector('[data-group="freq"]').style.display = mode === 'freq' ? '' : 'none';
+      formEl.querySelector('[data-group="wave"]').style.display = mode === 'wave' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      const type = segValue(formEl, 'type');
+      const mode = segValue(formEl, 'mode');
+      const speed = type === 'sound' ? (+qs(formEl, '#wf-speed').value || 343) : 299792458;
+      let freq, wave;
+      if (mode === 'freq') {
+        freq = +qs(formEl, '#wf-freq').value || 0;
+        wave = freq ? speed / freq : 0;
+      } else {
+        wave = +qs(formEl, '#wf-wave').value || 0;
+        freq = wave ? speed / wave : 0;
+      }
+      if (!freq && !wave) { resultEl.innerHTML = emptyResult('Enter a frequency or wavelength'); return; }
+      resultEl.innerHTML = heroBlock('Wavelength', `${fmtNum(wave, 6)} m`, `At ${fmtNum(freq, 2)} Hz`) +
+        `<div class="result-rows">${resultRow('Frequency', `${fmtNum(freq, 2)} Hz`)}${resultRow('Wavelength', `${fmtNum(wave, 6)} m`)}${resultRow('Wave speed used', `${fmtNum(speed, 0)} m/s`)}</div>` +
+        infoNote('Uses wave speed = frequency × wavelength. Light/EM waves use the speed of light in a vacuum (299,792,458 m/s); sound speed varies by medium and temperature — 343 m/s is a typical value for air at room temperature.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Resistor colour code calculator ---------------- */
+CALCULATORS['resistor-color-code'] = {
+  render(formEl, resultEl) {
+    const COLORS = [
+      { name: 'Black', digit: 0, mult: 1, color: '#000000' },
+      { name: 'Brown', digit: 1, mult: 10, tol: 1, color: '#8B4513' },
+      { name: 'Red', digit: 2, mult: 100, tol: 2, color: '#DC2626' },
+      { name: 'Orange', digit: 3, mult: 1000, color: '#F97316' },
+      { name: 'Yellow', digit: 4, mult: 10000, color: '#EAB308' },
+      { name: 'Green', digit: 5, mult: 100000, tol: 0.5, color: '#16A34A' },
+      { name: 'Blue', digit: 6, mult: 1000000, tol: 0.25, color: '#2563EB' },
+      { name: 'Violet', digit: 7, mult: 10000000, tol: 0.1, color: '#7C3AED' },
+      { name: 'Grey', digit: 8, mult: 100000000, color: '#6B7280' },
+      { name: 'White', digit: 9, mult: 1000000000, color: '#F3F4F6' },
+      { name: 'Gold', mult: 0.1, tol: 5, color: '#D4AF37' },
+      { name: 'Silver', mult: 0.01, tol: 10, color: '#C0C0C0' },
+    ];
+    const digitOptions = COLORS.filter(c => c.digit !== undefined);
+    const multOptions = COLORS;
+    const tolOptions = COLORS.filter(c => c.tol !== undefined);
+    const opts = (list, key) => list.map(c => `<option value="${c.name}">${c.name}${key ? ` (${key === 'mult' ? '×' + c.mult : c.tol + '%'})` : ''}</option>`).join('');
+    formEl.innerHTML = `
+      <h3>Colour bands (4-band resistor)</h3>
+      <div class="field"><label>Band 1 (1st digit)</label><select id="rc-1">${opts(digitOptions)}</select></div>
+      <div class="field"><label>Band 2 (2nd digit)</label><select id="rc-2">${opts(digitOptions)}</select></div>
+      <div class="field"><label>Band 3 (multiplier)</label><select id="rc-3">${opts(multOptions, 'mult')}</select></div>
+      <div class="field"><label>Band 4 (tolerance)</label><select id="rc-4">${opts(tolOptions, 'tol')}</select></div>`;
+    formEl.querySelector('#rc-3').value = 'Red';
+    formEl.querySelector('#rc-4').value = 'Gold';
+    function calc() {
+      const c1 = COLORS.find(c => c.name === qs(formEl, '#rc-1').value);
+      const c2 = COLORS.find(c => c.name === qs(formEl, '#rc-2').value);
+      const c3 = COLORS.find(c => c.name === qs(formEl, '#rc-3').value);
+      const c4 = COLORS.find(c => c.name === qs(formEl, '#rc-4').value);
+      const value = (c1.digit * 10 + c2.digit) * c3.mult;
+      let display = value >= 1000000 ? fmtNum(value / 1000000, 2) + ' MΩ' : value >= 1000 ? fmtNum(value / 1000, 2) + ' kΩ' : fmtNum(value, 2) + ' Ω';
+      resultEl.innerHTML = heroBlock('Resistance', display, `±${c4.tol}% tolerance`) +
+        `<div class="result-rows">${resultRow('Value', display)}${resultRow('Tolerance', `±${c4.tol}%`)}${resultRow('Range', `${fmtNum(value * (1 - c4.tol / 100), 1)} – ${fmtNum(value * (1 + c4.tol / 100), 1)} Ω`)}</div>`;
+    }
+    formEl.addEventListener('change', calc);
+    calc();
+  }
+};
+
+/* ---------------- Dilution calculator (C1V1=C2V2) ---------------- */
+CALCULATORS['dilution-calculator'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Solve for</h3>
+      <div class="field"><label>Which value do you need?</label>
+        <div class="seg" data-seg="solve"><button data-value="v1" class="active">Volume of stock (V1)</button><button data-value="v2">Final volume (V2)</button></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Stock concentration (C1)</label><input type="number" id="di-c1" value="10"></div>
+        <div class="field"><label>Target concentration (C2)</label><input type="number" id="di-c2" value="1"></div>
+      </div>
+      <div class="field" data-group="v1"><label>Final volume (V2)</label><input type="number" id="di-v2" value="500"></div>
+      <div class="field" data-group="v2" style="display:none"><label>Volume of stock (V1)</label><input type="number" id="di-v1" value="50"></div>`;
+    segControl(formEl, 'solve', () => {
+      const solve = segValue(formEl, 'solve');
+      formEl.querySelector('[data-group="v1"]').style.display = solve === 'v1' ? '' : 'none';
+      formEl.querySelector('[data-group="v2"]').style.display = solve === 'v2' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      const c1 = +qs(formEl, '#di-c1').value || 0;
+      const c2 = +qs(formEl, '#di-c2').value || 0;
+      const solve = segValue(formEl, 'solve');
+      if (!c1 || !c2) { resultEl.innerHTML = emptyResult('Enter both concentrations'); return; }
+      if (solve === 'v1') {
+        const v2 = +qs(formEl, '#di-v2').value || 0;
+        const v1 = (c2 * v2) / c1;
+        resultEl.innerHTML = heroBlock('Stock volume needed (V1)', `${fmtNum(v1, 2)}`, `Plus ${fmtNum(v2 - v1, 2)} diluent to reach ${v2}`) +
+          `<div class="result-rows">${resultRow('Stock volume (V1)', fmtNum(v1, 2))}${resultRow('Diluent to add', fmtNum(v2 - v1, 2))}${resultRow('Final volume (V2)', v2)}</div>`;
+      } else {
+        const v1 = +qs(formEl, '#di-v1').value || 0;
+        const v2 = (c1 * v1) / c2;
+        resultEl.innerHTML = heroBlock('Final volume (V2)', `${fmtNum(v2, 2)}`, `Add ${fmtNum(v2 - v1, 2)} diluent to ${v1}`) +
+          `<div class="result-rows">${resultRow('Starting volume (V1)', v1)}${resultRow('Diluent to add', fmtNum(v2 - v1, 2))}${resultRow('Final volume (V2)', fmtNum(v2, 2))}</div>`;
+      }
+      resultEl.innerHTML += infoNote('Uses C1V1 = C2V2. Use consistent units throughout (e.g. both concentrations in the same unit, both volumes in the same unit).');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Moment of force calculator ---------------- */
+CALCULATORS['moment-of-force'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Force and distance</h3>
+      <div class="field-row">
+        <div class="field"><label>Force (N)</label><input type="number" id="mf-force" value="50"></div>
+        <div class="field"><label>Perpendicular distance from pivot (m)</label><input type="number" step="0.01" id="mf-dist" value="0.75"></div>
+      </div>`;
+    function calc() {
+      const force = +qs(formEl, '#mf-force').value || 0;
+      const dist = +qs(formEl, '#mf-dist').value || 0;
+      if (!force || !dist) { resultEl.innerHTML = emptyResult('Enter force and distance'); return; }
+      const moment = force * dist;
+      resultEl.innerHTML = heroBlock('Moment (turning force)', `${fmtNum(moment, 2)} Nm`, `${force}N at ${dist}m from pivot`) +
+        `<div class="result-rows">${resultRow('Force', `${force} N`)}${resultRow('Distance', `${dist} m`)}${resultRow('Moment', `${fmtNum(moment, 2)} Nm`)}</div>` +
+        infoNote('Uses moment = force × perpendicular distance from the pivot. If the force isn\'t applied perpendicular to the lever, only the perpendicular component contributes to the moment.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Escape velocity calculator ---------------- */
+CALCULATORS['escape-velocity'] = {
+  render(formEl, resultEl) {
+    const G = 6.674e-11;
+    formEl.innerHTML = `
+      <h3>Body details</h3>
+      <div class="field-row">
+        <div class="field"><label>Mass (kg)</label><input type="number" id="ev2-mass" value="5.972e24"></div>
+        <div class="field"><label>Radius (m)</label><input type="number" id="ev2-radius" value="6371000"></div>
+      </div>
+      <p class="hint" style="margin-top:-8px">Defaults are Earth's mass and radius.</p>`;
+    function calc() {
+      const mass = +qs(formEl, '#ev2-mass').value || 0;
+      const radius = +qs(formEl, '#ev2-radius').value || 0;
+      if (!mass || !radius) { resultEl.innerHTML = emptyResult('Enter mass and radius'); return; }
+      const v = Math.sqrt((2 * G * mass) / radius);
+      resultEl.innerHTML = heroBlock('Escape velocity', `${fmtNum(v / 1000, 2)} km/s`, `${fmtNum(v, 0)} m/s`) +
+        `<div class="result-rows">${resultRow('Mass', mass.toExponential(3) + ' kg')}${resultRow('Radius', fmtNum(radius, 0) + ' m')}${resultRow('Escape velocity', fmtNum(v / 1000, 2) + ' km/s')}</div>` +
+        infoNote('Uses v = √(2GM/r) with the gravitational constant G = 6.674×10⁻¹¹ N·m²/kg². Ignores atmospheric drag.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
