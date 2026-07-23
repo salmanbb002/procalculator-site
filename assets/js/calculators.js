@@ -1230,3 +1230,317 @@ CALCULATORS['skip-size'] = {
     wireLiveCalc(formEl, calc);
   }
 };
+
+/* ---------------- Road Tax (VED) estimator ---------------- */
+CALCULATORS['road-tax-estimator'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Vehicle details</h3>
+      <div class="field"><label>When was the car first registered?</label>
+        <div class="seg" data-seg="age"><button data-value="new" class="active">First year (new)</button><button data-value="standard">2nd year onwards</button></div>
+      </div>
+      <div class="field" data-group="new"><label>CO2 emissions (g/km)</label><input type="number" id="rt-co2" value="120"></div>
+      <div class="field"><label>List price when new</label><input type="number" id="rt-price" value="30000"></div>`;
+    segControl(formEl, 'age', () => { formEl.querySelector('[data-group="new"]').style.display = segValue(formEl, 'age') === 'new' ? '' : 'none'; calc(); });
+    const CO2_BANDS = [
+      [0, 0], [50, 10], [75, 30], [90, 135], [100, 175], [110, 195], [130, 220], [150, 270], [170, 680], [190, 1095], [225, 1650], [255, 2340], [Infinity, 2745]
+    ];
+    function calc() {
+      const age = segValue(formEl, 'age');
+      const price = +qs(formEl, '#rt-price').value || 0;
+      const STANDARD_RATE = 190;
+      const EXPENSIVE_SUPPLEMENT = 410;
+      let tax;
+      if (age === 'new') {
+        const co2 = +qs(formEl, '#rt-co2').value || 0;
+        const band = CO2_BANDS.find(b => co2 <= b[0]) || CO2_BANDS[CO2_BANDS.length - 1];
+        tax = band[1];
+      } else {
+        tax = STANDARD_RATE + (price > 40000 ? EXPENSIVE_SUPPLEMENT : 0);
+      }
+      resultEl.innerHTML = heroBlock('Estimated annual VED', fmtGBP(tax), age === 'new' ? 'First-year rate (CO2-based)' : 'Standard rate') +
+        `<div class="result-rows">${resultRow('Vehicle stage', age === 'new' ? 'First year' : 'Standard (year 2+)')}${price > 40000 && age !== 'new' ? resultRow('Includes expensive car supplement', 'Yes (list price over £40,000)') : ''}</div>` +
+        infoNote('Illustrative estimate using the current-era CO2-banded VED structure for petrol/diesel cars. Electric vehicles, motorcycles, vans and pre-2017 registered cars use different rules, and rates change — always confirm on gov.uk.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Car insurance payment comparator ---------------- */
+CALCULATORS['car-insurance-estimator'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your quote</h3>
+      <div class="field"><label>Annual premium (paid upfront)</label><input type="number" id="ci-annual" value="600"></div>
+      <div class="field-row">
+        <div class="field"><label>Monthly price offered</label><input type="number" id="ci-monthly" value="55"></div>
+        <div class="field"><label>Deposit (if any)</label><input type="number" id="ci-deposit" value="0"></div>
+      </div>`;
+    function calc() {
+      const annual = +qs(formEl, '#ci-annual').value || 0;
+      const monthly = +qs(formEl, '#ci-monthly').value || 0;
+      const deposit = +qs(formEl, '#ci-deposit').value || 0;
+      if (!annual || !monthly) { resultEl.innerHTML = emptyResult('Enter both the annual and monthly price'); return; }
+      const totalMonthlyCost = deposit + monthly * 11; // typical 12-payment plan: deposit + 11 monthly
+      const extraCost = totalMonthlyCost - annual;
+      const impliedAPR = annual ? (extraCost / annual) * 100 : 0;
+      resultEl.innerHTML = heroBlock('Extra cost of paying monthly', fmtGBP(extraCost), `${fmtNum(impliedAPR, 1)}% more than paying annually`) +
+        `<div class="result-rows">${resultRow('Pay annually', fmtGBP(annual))}${resultRow('Pay monthly (total)', fmtGBP(totalMonthlyCost))}${resultRow('Extra cost', fmtGBP(extraCost))}</div>` +
+        infoNote("Insurers usually charge interest for spreading payments monthly — this compares the two options you enter. This tool doesn't predict your premium, since real quotes depend on dozens of individual rating factors only an insurer can assess.");
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Speeding fine estimator ---------------- */
+CALCULATORS['speeding-fine-estimator'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Details</h3>
+      <div class="field-row">
+        <div class="field"><label>Speed limit (mph)</label><input type="number" id="sf-limit" value="30"></div>
+        <div class="field"><label>Recorded speed (mph)</label><input type="number" id="sf-speed" value="42"></div>
+      </div>
+      <div class="field"><label>Weekly income (net)</label><input type="number" id="sf-income" value="500"></div>`;
+    function calc() {
+      const limit = +qs(formEl, '#sf-limit').value || 0;
+      const speed = +qs(formEl, '#sf-speed').value || 0;
+      const income = +qs(formEl, '#sf-income').value || 0;
+      if (!limit || !speed || speed <= limit) { resultEl.innerHTML = emptyResult('Enter a recorded speed above the limit'); return; }
+      const pctOver = ((speed - limit) / limit) * 100;
+      let band, points, finePct;
+      if (pctOver < 50) { band = 'Band A'; points = '3 points'; finePct = 0.5; }
+      else if (pctOver < 100) { band = 'Band B'; points = '4-6 points or disqualification'; finePct = 1.0; }
+      else { band = 'Band C'; points = '6 points or disqualification'; finePct = 1.5; }
+      const fine = Math.min(income * finePct, 2500);
+      resultEl.innerHTML = heroBlock('Guideline fine range', band, `~${fmtGBP(fine)}, capped by statutory maximum`) +
+        `<div class="result-rows">${resultRow('Speed over limit', `${fmtNum(pctOver, 0)}%`)}${resultRow('Sentencing band', band)}${resultRow('Typical penalty points', points)}</div>` +
+        infoNote('Based on published UK sentencing guidelines (bands relative to speed and income), not a guaranteed outcome — actual fines and points are set by police/court discretion and individual circumstances. Many cases are instead offered a speed awareness course.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- EV charging cost ---------------- */
+CALCULATORS['ev-charging-cost'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Charging details</h3>
+      <div class="field-row">
+        <div class="field"><label>Battery size (kWh)</label><input type="number" id="ev-battery" value="60"></div>
+        <div class="field"><label>Electricity price (p/kWh)</label><input type="number" step="0.1" id="ev-price" value="28"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Current charge (%)</label><input type="number" id="ev-from" value="20"></div>
+        <div class="field"><label>Target charge (%)</label><input type="number" id="ev-to" value="80"></div>
+      </div>`;
+    function calc() {
+      const battery = +qs(formEl, '#ev-battery').value || 0;
+      const price = +qs(formEl, '#ev-price').value || 0;
+      const from = +qs(formEl, '#ev-from').value || 0;
+      const to = +qs(formEl, '#ev-to').value || 0;
+      if (!battery || to <= from) { resultEl.innerHTML = emptyResult('Enter battery size and a valid charge range'); return; }
+      const kwhNeeded = battery * (to - from) / 100;
+      const cost = kwhNeeded * price / 100;
+      const costPerMile = cost / (kwhNeeded * 3.5); // rough 3.5 mi/kWh assumption for range context
+      resultEl.innerHTML = heroBlock('Charging cost', fmtGBP(cost), `${fmtNum(kwhNeeded, 1)} kWh from ${from}% to ${to}%`) +
+        `<div class="result-rows">${resultRow('Energy added', `${fmtNum(kwhNeeded, 1)} kWh`)}${resultRow('Price per kWh', `${price}p`)}${resultRow('Total cost', fmtGBP(cost))}</div>` +
+        infoNote('Home electricity tariffs vary, especially with EV/off-peak tariffs which can be significantly cheaper overnight. Public rapid chargers are typically priced higher per kWh than home charging.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Mileage allowance calculator ---------------- */
+CALCULATORS['mileage-allowance'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Business travel</h3>
+      <div class="field-row">
+        <div class="field"><label>Business miles this tax year</label><input type="number" id="ma-miles" value="8000"></div>
+        <div class="field"><label>Vehicle type</label>
+          <div class="seg" data-seg="type"><button data-value="car" class="active">Car/van</button><button data-value="bike">Motorcycle</button></div>
+        </div>
+      </div>`;
+    segControl(formEl, 'type', calc);
+    function calc() {
+      const miles = +qs(formEl, '#ma-miles').value || 0;
+      const type = segValue(formEl, 'type');
+      if (!miles) { resultEl.innerHTML = emptyResult('Enter your business mileage'); return; }
+      let allowance;
+      if (type === 'bike') {
+        allowance = miles * 0.24;
+      } else {
+        const first10k = Math.min(miles, 10000);
+        const remainder = Math.max(0, miles - 10000);
+        allowance = first10k * 0.45 + remainder * 0.25;
+      }
+      resultEl.innerHTML = heroBlock('Tax-free mileage allowance', fmtGBP(allowance), `${fmtNum(miles, 0)} business miles`) +
+        `<div class="result-rows">${resultRow('Vehicle type', type === 'bike' ? 'Motorcycle' : 'Car/van')}${resultRow('Rate structure', type === 'bike' ? '24p/mile flat' : '45p first 10,000mi, 25p after')}</div>` +
+        infoNote("Uses HMRC's standard Approved Mileage Allowance Payment (AMAP) rate structure. Confirm current rates on gov.uk, since they can change and this is what your employer can pay tax-free without it counting as a benefit.");
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Tyre size comparison ---------------- */
+CALCULATORS['tyre-size-comparison'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Compare two tyre sizes</h3>
+      <div class="field"><label>Current tyre (width/aspect R rim)</label>
+        <div class="field-row"><input type="number" id="ty-w1" value="205" placeholder="Width"><input type="number" id="ty-a1" value="55" placeholder="Aspect"><input type="number" id="ty-r1" value="16" placeholder="Rim (in)"></div>
+      </div>
+      <div class="field"><label>New tyre (width/aspect R rim)</label>
+        <div class="field-row"><input type="number" id="ty-w2" value="215" placeholder="Width"><input type="number" id="ty-a2" value="50" placeholder="Aspect"><input type="number" id="ty-r2" value="17" placeholder="Rim (in)"></div>
+      </div>`;
+    function diameter(w, a, r) { return (r * 25.4) + (2 * w * (a / 100)); }
+    function calc() {
+      const w1 = +qs(formEl, '#ty-w1').value || 0, a1 = +qs(formEl, '#ty-a1').value || 0, r1 = +qs(formEl, '#ty-r1').value || 0;
+      const w2 = +qs(formEl, '#ty-w2').value || 0, a2 = +qs(formEl, '#ty-a2').value || 0, r2 = +qs(formEl, '#ty-r2').value || 0;
+      if (!w1 || !r1 || !w2 || !r2) { resultEl.innerHTML = emptyResult('Enter both tyre sizes'); return; }
+      const d1 = diameter(w1, a1, r1), d2 = diameter(w2, a2, r2);
+      const diffPct = ((d2 - d1) / d1) * 100;
+      const speedoAt70 = 70 * (d2 / d1);
+      resultEl.innerHTML = heroBlock('Diameter difference', `${diffPct > 0 ? '+' : ''}${fmtNum(diffPct, 1)}%`, diffPct > 0 ? 'New tyre is larger overall' : 'New tyre is smaller overall') +
+        `<div class="result-rows">${resultRow('Current diameter', `${fmtNum(d1, 0)} mm`)}${resultRow('New diameter', `${fmtNum(d2, 0)} mm`)}${resultRow('Speedometer at true 70mph', `${fmtNum(speedoAt70, 0)} mph`)}</div>` +
+        infoNote("A significant diameter change affects speedometer accuracy and can affect gearing, ABS/ESP calibration and insurance/legal compliance — keep within your tyre manufacturer's and vehicle manual's approved size range.");
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Ratio simplifier ---------------- */
+CALCULATORS['ratio-simplifier'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Your ratio</h3>
+      <div class="field-row">
+        <div class="field"><label>First value</label><input type="number" id="rs-a" value="16"></div>
+        <div class="field"><label>Second value</label><input type="number" id="rs-b" value="24"></div>
+      </div>`;
+    function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+    function calc() {
+      const a = +qs(formEl, '#rs-a').value || 0;
+      const b = +qs(formEl, '#rs-b').value || 0;
+      if (!a || !b) { resultEl.innerHTML = emptyResult('Enter both values'); return; }
+      const divisor = gcd(Math.round(a), Math.round(b));
+      const simpleA = a / divisor, simpleB = b / divisor;
+      resultEl.innerHTML = heroBlock('Simplified ratio', `${fmtNum(simpleA, 0)} : ${fmtNum(simpleB, 0)}`, `From ${a} : ${b}`) +
+        `<div class="result-rows">${resultRow('Greatest common divisor', divisor)}${resultRow('Decimal equivalent', fmtNum(simpleA / simpleB, 4))}</div>`;
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Matrix determinant ---------------- */
+CALCULATORS['matrix-determinant'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Matrix size</h3>
+      <div class="field"><label>Size</label>
+        <div class="seg" data-seg="size"><button data-value="2" class="active">2×2</button><button data-value="3">3×3</button></div>
+      </div>
+      <div data-group="grid"></div>`;
+    function renderGrid() {
+      const size = +segValue(formEl, 'size') || 2;
+      const grid = formEl.querySelector('[data-group="grid"]');
+      let html = '<div style="display:grid;grid-template-columns:repeat(' + size + ',1fr);gap:8px;margin-top:8px">';
+      for (let i = 0; i < size * size; i++) html += `<input type="number" class="mx-cell" data-i="${i}" value="${i % (size + 1) === 0 ? 1 : 0}">`;
+      html += '</div>';
+      grid.innerHTML = html;
+      grid.querySelectorAll('.mx-cell').forEach(el => el.addEventListener('input', calc));
+    }
+    segControl(formEl, 'size', () => { renderGrid(); calc(); });
+    function calc() {
+      const size = +segValue(formEl, 'size') || 2;
+      const cells = [...formEl.querySelectorAll('.mx-cell')].map(el => +el.value || 0);
+      let det;
+      if (size === 2) {
+        det = cells[0] * cells[3] - cells[1] * cells[2];
+      } else {
+        const m = [[cells[0], cells[1], cells[2]], [cells[3], cells[4], cells[5]], [cells[6], cells[7], cells[8]]];
+        det = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+            - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+            + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+      }
+      resultEl.innerHTML = heroBlock('Determinant', fmtNum(det, 4), `${size}×${size} matrix`) +
+        infoNote(det === 0 ? 'A determinant of zero means this matrix is singular (not invertible).' : 'A non-zero determinant means this matrix is invertible.');
+    }
+    renderGrid();
+    calc();
+  }
+};
+
+/* ---------------- Unit circle angle finder ---------------- */
+CALCULATORS['unit-circle-angle'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Angle</h3>
+      <div class="field"><label>Angle</label><input type="number" id="uc-angle" value="45"></div>
+      <div class="field"><label>Unit</label>
+        <div class="seg" data-seg="unit"><button data-value="deg" class="active">Degrees</button><button data-value="rad">Radians</button></div>
+      </div>`;
+    segControl(formEl, 'unit', calc);
+    function calc() {
+      const angle = +qs(formEl, '#uc-angle').value || 0;
+      const unit = segValue(formEl, 'unit');
+      const rad = unit === 'deg' ? angle * Math.PI / 180 : angle;
+      const sin = Math.sin(rad), cos = Math.cos(rad), tan = Math.cos(rad) !== 0 ? Math.tan(rad) : NaN;
+      resultEl.innerHTML = heroBlock('sin, cos, tan', `${fmtNum(sin, 4)}, ${fmtNum(cos, 4)}, ${isNaN(tan) ? 'undefined' : fmtNum(tan, 4)}`, `At ${angle}${unit === 'deg' ? '°' : ' rad'}`) +
+        `<div class="result-rows">${resultRow('sin', fmtNum(sin, 4))}${resultRow('cos', fmtNum(cos, 4))}${resultRow('tan', isNaN(tan) ? 'undefined' : fmtNum(tan, 4))}${resultRow('Angle in radians', fmtNum(rad, 4))}</div>`;
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Prime factorisation ---------------- */
+CALCULATORS['prime-factorization'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Number</h3>
+      <div class="field"><label>Whole number (2 or greater)</label><input type="number" id="pf-n" value="360"></div>`;
+    function factorize(n) {
+      const factors = [];
+      let d = 2;
+      while (d * d <= n) {
+        while (n % d === 0) { factors.push(d); n /= d; }
+        d++;
+      }
+      if (n > 1) factors.push(n);
+      return factors;
+    }
+    function calc() {
+      let n = Math.round(+qs(formEl, '#pf-n').value || 0);
+      if (n < 2) { resultEl.innerHTML = emptyResult('Enter a whole number 2 or greater'); return; }
+      const factors = factorize(n);
+      const counts = {};
+      factors.forEach(f => counts[f] = (counts[f] || 0) + 1);
+      const expression = Object.entries(counts).map(([f, c]) => c > 1 ? `${f}^${c}` : `${f}`).join(' × ');
+      resultEl.innerHTML = heroBlock('Prime factorisation', expression, `${factors.length} prime factor(s)`) +
+        `<div class="result-rows">${resultRow('Original number', n)}${resultRow('Factor list', factors.join(', '))}${resultRow('Is prime?', factors.length === 1 ? 'Yes' : 'No')}</div>`;
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Logarithm calculator ---------------- */
+CALCULATORS['log-calculator'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Logarithm</h3>
+      <div class="field-row">
+        <div class="field"><label>Number</label><input type="number" id="log-n" value="100"></div>
+        <div class="field"><label>Base</label><input type="number" id="log-base" value="10"></div>
+      </div>`;
+    function calc() {
+      const n = +qs(formEl, '#log-n').value || 0;
+      const base = +qs(formEl, '#log-base').value || 0;
+      if (n <= 0 || base <= 0 || base === 1) { resultEl.innerHTML = emptyResult('Enter a positive number and a valid base (not 1)'); return; }
+      const result = Math.log(n) / Math.log(base);
+      resultEl.innerHTML = heroBlock(`log${base}(${n})`, fmtNum(result, 6), `Natural log: ${fmtNum(Math.log(n), 6)}`) +
+        `<div class="result-rows">${resultRow('log base ' + base, fmtNum(result, 6))}${resultRow('Natural log (ln)', fmtNum(Math.log(n), 6))}${resultRow('log base 10', fmtNum(Math.log10(n), 6))}</div>`;
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV Charging Cost Calculator · Pro Calculator UK</title>
+<meta name="description" content="Work out the cost of charging an electric vehicle at home.">
+<meta name="keywords" content="ev charging cost calculator, uk ev charging cost calculator, free ev charging cost calculator, ev charging cost uk">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://procalculator.site/calculator/ev-charging-cost">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pro Calculator UK">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="EV Charging Cost Calculator · Pro Calculator UK">
+<meta property="og:description" content="Work out the cost of charging an electric vehicle at home.">
+<meta property="og:url" content="https://procalculator.site/calculator/ev-charging-cost">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EV Charging Cost Calculator · Pro Calculator UK">
+<meta name="twitter:description" content="Work out the cost of charging an electric vehicle at home.">
+<script type="application/ld+json" id="ld-breadcrumb">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://procalculator.site/"},{"@type":"ListItem","position":2,"name":"Automotive Calculators","item":"https://procalculator.site/calculators/automotive"},{"@type":"ListItem","position":3,"name":"EV Charging Cost Calculator","item":"https://procalculator.site/calculator/ev-charging-cost"}]}</script>
+<script type="application/ld+json" id="ld-faq">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is home EV charging cheaper than public charging?","acceptedAnswer":{"@type":"Answer","text":"Generally yes, often significantly so \u2014 especially on an EV-specific or off-peak electricity tariff for overnight charging. Public rapid chargers typically charge a premium per kWh for speed and convenience."}},{"@type":"Question","name":"How do I work out cost per mile from charging cost?","acceptedAnswer":{"@type":"Answer","text":"Divide your total charging cost by the estimated range added, using your vehicle's real-world efficiency (miles per kWh), which varies by model, driving style and conditions."}}]}</script>
+<script type="application/ld+json" id="ld-webapp">{"@context":"https://schema.org","@type":"WebApplication","name":"EV Charging Cost Calculator","url":"https://procalculator.site/calculator/ev-charging-cost","applicationCategory":"AutoApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"GBP"}}</script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand"><span class="brand-mark">🧮</span><span>Pro Calculator UK<small>Free UK Calculators</small></span></a>
+    <nav class="main-nav">
+      <a href="/">Home</a>
+      <a href="/calculators">All Calculators</a>
+      <a href="/blog">Blog</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button class="header-search-btn" data-search-trigger type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>Search calculators…</span><kbd>⌘K</kbd>
+      </button>
+      <button class="btn-icon" data-theme-toggle type="button" aria-label="Toggle dark mode">🌙</button>
+      <button class="btn-icon nav-toggle" data-nav-toggle type="button" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-drawer" data-mobile-drawer>
+  <div class="backdrop"></div>
+  <div class="panel">
+    <a href="/">Home</a>
+    <a href="/calculators">All Calculators</a>
+    <a href="/blog">Blog</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/disclaimer">Disclaimer</a>
+  </div>
+</div>
+
+<div class="search-overlay" data-search-overlay>
+  <div class="backdrop"></div>
+  <div class="search-panel">
+    <div class="search-panel-input">
+      <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Search 80+ UK calculators…">
+    </div>
+    <div class="search-results" data-search-results></div>
+  </div>
+</div>
+
+<main>
+  <section class="tool-hero">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/">Home</a><span>/</span>
+        <a href="/calculators/automotive">Automotive</a><span>/</span>
+        <span>EV Charging Cost Calculator</span>
+      </nav>
+      <div class="head-row">
+        <div class="tool-icon tool-icon-lg">🔌</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <h1>EV Charging Cost Calculator</h1><span class="badge badge-new">New</span>
+          </div>
+        </div>
+      </div>
+      <p class="desc">Work out the cost of charging an electric vehicle at home.</p>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="calc-layout" data-static-calc="ev-charging-cost">
+      <div class="panel" data-form-panel></div>
+      <div class="result-panel">
+        <div class="panel" data-result-panel></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container prose" style="max-width:800px">
+      <h2 style="border-top:none;padding-top:0">How it works</h2>
+      <p>Charging cost is simply the energy added to the battery (in kWh) multiplied by your electricity price per kWh. The energy added is your battery's total capacity multiplied by the percentage-point gap between your starting and target charge level.</p>
+      <h2>UK context</h2>
+      <p>Home charging is generally far cheaper per mile than running a petrol or diesel car, especially if you're on an EV-specific or off-peak electricity tariff, which can offer significantly lower rates for overnight charging. Public rapid and ultra-rapid chargers are typically priced considerably higher per kWh than home charging, since you're paying for speed and convenience — worth factoring in if you rely on public charging regularly.</p>
+      <h2>Tips</h2>
+      <ul>
+        <li>Check whether your energy supplier offers an EV-specific or off-peak tariff — scheduling charging overnight can meaningfully reduce your cost per charge.</li>
+        <li>Public rapid charger pricing varies a lot by network and location — check the app or network's pricing before relying on public charging for routine top-ups.</li>
+        <li>Charging efficiency (some energy is lost as heat during charging) means the energy that actually reaches the battery is slightly less than what you're billed for — a small but real factor in the true cost per mile.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container prose" style="padding-top:0;max-width:800px">
+      <h2 style="border-top:none;padding-top:0">Frequently asked questions</h2>
+        <div class="contact-info-item">
+          <h4>Is home EV charging cheaper than public charging?</h4>
+          <p>Generally yes, often significantly so — especially on an EV-specific or off-peak electricity tariff for overnight charging. Public rapid chargers typically charge a premium per kWh for speed and convenience.</p>
+        </div>
+        <div class="contact-info-item">
+          <h4>How do I work out cost per mile from charging cost?</h4>
+          <p>Divide your total charging cost by the estimated range added, using your vehicle's real-world efficiency (miles per kWh), which varies by model, driving style and conditions.</p>
+        </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container prose" style="max-width:800px;padding-bottom:0">
+      <h2 style="border-top:none;padding-top:0">A quick note</h2>
+      <p>Uses the electricity price and charge range you enter — actual home tariffs vary, especially with EV/off-peak tariffs, and public charging is typically priced differently from home charging.</p>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 class="related-heading">Related calculators</h2>
+    <div class="grid grid-4">
+          <a class="card card-link tool-card" href="/calculator/fuel-cost-mpg">
+            <div class="top-row"><div class="tool-icon">⛽</div></div>
+            <div><span class="cat-tag">Automotive</span><h3>Fuel Cost & MPG Calculator</h3></div>
+          </a>
+          <a class="card card-link tool-card" href="/calculator/road-tax-estimator">
+            <div class="top-row"><div class="tool-icon">🚗</div></div>
+            <div><span class="cat-tag">Automotive</span><h3>Road Tax (VED) Estimator</h3></div>
+          </a>
+          <a class="card card-link tool-card" href="/calculator/car-finance-pcp">
+            <div class="top-row"><div class="tool-icon">🚙</div></div>
+            <div><span class="cat-tag">Automotive</span><h3>Car Finance (PCP/HP) Calculator</h3></div>
+          </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="brand"><span class="brand-mark">🧮</span><span>Pro Calculator UK</span></a>
+        <p>Free, instant calculators built for everyday UK life — finance, health, home and a little bit of fun.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Categories</h4>
+        <a href="/calculators/finance">Finance</a>
+        <a href="/calculators/construction">Construction</a>
+        <a href="/calculators/automotive">Automotive</a>
+        <a href="/calculators/health">Health &amp; Fitness</a>
+        <a href="/calculators/maths">Maths</a>
+      </div>
+      <div class="footer-col">
+        <h4>More</h4>
+        <a href="/calculators/science">Science</a>
+        <a href="/calculators/education">Education</a>
+        <a href="/calculators/time">Time</a>
+        <a href="/calculators/fun">Fun &amp; Quirky</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="/blog">Blog</a>
+        <a href="/about">About Us</a>
+        <a href="/contact">Contact</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/disclaimer">Disclaimer</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Pro Calculator UK. All results are estimates for guidance only.</span>
+      <span>Built for the UK 🇬🇧</span>
+    </div>
+  </div>
+</footer>
+<button class="back-to-top" data-back-to-top type="button" aria-label="Back to top">↑</button>
+
+<script src="/assets/js/tools-data.js"></script>
+<script src="/assets/js/calculators.js"></script>
+<script src="/assets/js/app.js"></script>
+<script src="/assets/js/calc-init.js"></script>
+</body>
+</html>
