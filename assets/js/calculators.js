@@ -655,6 +655,149 @@ CALCULATORS['unit-converter'] = {
   }
 };
 
+/* ---------------- LBS to Stone ---------------- */
+CALCULATORS['lbs-to-stone'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert weight</h3>
+      <div class="seg" data-seg="dir"><button data-value="lbs" class="active">Pounds → Stone</button><button data-value="stone">Stone + lb → Pounds</button></div>
+      <div class="field" style="margin-top:16px" data-group="lbs">
+        <label>Weight (lb)</label>
+        <input type="number" id="lts-lbs" value="154" step="0.1">
+      </div>
+      <div class="field" data-group="stone" style="display:none">
+        <div class="field-row">
+          <div><label>Stone</label><input type="number" id="lts-st" value="11" step="1"></div>
+          <div><label>Pounds</label><input type="number" id="lts-lb2" value="0" step="0.1"></div>
+        </div>
+      </div>`;
+    let dir = 'lbs';
+    segControl(formEl, 'dir', v => {
+      dir = v;
+      formEl.querySelector('[data-group="lbs"]').style.display = v === 'lbs' ? '' : 'none';
+      formEl.querySelector('[data-group="stone"]').style.display = v === 'stone' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      if (dir === 'lbs') {
+        const lbs = +qs(formEl, '#lts-lbs').value || 0;
+        if (!lbs) { resultEl.innerHTML = emptyResult('Enter a weight in pounds'); return; }
+        const stoneTotal = lbs / 14;
+        const stone = Math.floor(stoneTotal);
+        const remLb = lbs - stone * 14;
+        const kg = lbs * 0.45359237;
+        resultEl.innerHTML = heroBlock(`${fmtNum(lbs)} lb =`, `${stone}st ${fmtNum(remLb, 1)}lb`, `${fmtNum(stoneTotal, 3)} stone (decimal)`) +
+          `<div class="result-rows">${resultRow('In kilograms', `${fmtNum(kg, 1)} kg`)}${resultRow('Decimal stone', fmtNum(stoneTotal, 3))}</div>` +
+          infoNote('1 stone = 14 pounds exactly, the UK imperial standard.');
+      } else {
+        const st = +qs(formEl, '#lts-st').value || 0, lb2 = +qs(formEl, '#lts-lb2').value || 0;
+        const totalLbs = st * 14 + lb2;
+        if (!totalLbs) { resultEl.innerHTML = emptyResult('Enter a stone and pound value'); return; }
+        const kg = totalLbs * 0.45359237;
+        resultEl.innerHTML = heroBlock(`${st}st ${fmtNum(lb2, 1)}lb =`, `${fmtNum(totalLbs, 1)} lb`, `${fmtNum(kg, 1)} kg`) +
+          `<div class="result-rows">${resultRow('In kilograms', `${fmtNum(kg, 1)} kg`)}</div>` +
+          infoNote('1 stone = 14 pounds exactly, the UK imperial standard.');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- KG to Stone ---------------- */
+CALCULATORS['kg-to-stone'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert weight</h3>
+      <div class="field"><label>Weight (kg)</label><input type="number" id="kts-kg" value="70" step="0.1"></div>`;
+    function calc() {
+      const kg = +qs(formEl, '#kts-kg').value || 0;
+      if (!kg) { resultEl.innerHTML = emptyResult('Enter a weight in kilograms'); return; }
+      const lbs = kg / 0.45359237;
+      const stone = Math.floor(lbs / 14);
+      const remLb = lbs - stone * 14;
+      resultEl.innerHTML = heroBlock(`${fmtNum(kg, 1)} kg =`, `${stone}st ${fmtNum(remLb, 1)}lb`, `${fmtNum(lbs / 14, 3)} stone (decimal)`) +
+        `<div class="result-rows">${resultRow('In pounds', `${fmtNum(lbs, 1)} lb`)}${resultRow('Decimal stone', fmtNum(lbs / 14, 3))}</div>` +
+        infoNote('1 kilogram = 2.20462 pounds; 1 stone = 14 pounds.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Pints to ML ---------------- */
+CALCULATORS['pints-to-ml'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert volume</h3>
+      <div class="seg" data-seg="ptype"><button data-value="uk" class="active">UK / Imperial pint</button><button data-value="us">US pint</button></div>
+      <div class="field" style="margin-top:16px"><label>Pints</label><input type="number" id="ptm-val" value="1" step="0.25"></div>`;
+    let ptype = 'uk';
+    segControl(formEl, 'ptype', v => { ptype = v; calc(); });
+    const FACTORS = { uk: 568.26125, us: 473.176473 };
+    function calc() {
+      const val = +qs(formEl, '#ptm-val').value || 0;
+      if (!val) { resultEl.innerHTML = emptyResult('Enter a number of pints'); return; }
+      const ml = val * FACTORS[ptype];
+      const other = ptype === 'uk' ? 'us' : 'uk';
+      const otherMl = val * FACTORS[other];
+      resultEl.innerHTML = heroBlock(`${fmtNum(val, 2)} ${ptype === 'uk' ? 'UK' : 'US'} pint${val === 1 ? '' : 's'} =`, `${fmtNum(ml, 1)} ml`, `${fmtNum(ml / 1000, 3)} litres`) +
+        `<div class="result-rows">${resultRow(ptype === 'uk' ? 'If US pint instead' : 'If UK pint instead', `${fmtNum(otherMl, 1)} ml`)}${resultRow('In fluid ounces', ptype === 'uk' ? `${fmtNum(val * 20, 1)} imp fl oz` : `${fmtNum(val * 16, 1)} US fl oz`)}</div>` +
+        infoNote('A UK (imperial) pint is 568.26ml; a US pint is 473.18ml — about 20% smaller.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Litres to Gallons ---------------- */
+CALCULATORS['litres-to-gallons'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert volume</h3>
+      <div class="field"><label>Litres</label><input type="number" id="ltg-val" value="50" step="0.1"></div>`;
+    function calc() {
+      const litres = +qs(formEl, '#ltg-val').value || 0;
+      if (!litres) { resultEl.innerHTML = emptyResult('Enter a number of litres'); return; }
+      const ukGal = litres / 4.54609;
+      const usGal = litres / 3.785411784;
+      resultEl.innerHTML = heroBlock(`${fmtNum(litres, 2)} litres =`, `${fmtNum(ukGal, 3)} UK gallons`, `${fmtNum(usGal, 3)} US gallons`) +
+        `<div class="result-rows">${resultRow('UK / imperial gallons', fmtNum(ukGal, 3))}${resultRow('US gallons', fmtNum(usGal, 3))}${resultRow('In pints (UK)', `${fmtNum(litres / 0.56826125, 1)} pints`)}</div>` +
+        infoNote('The UK/imperial gallon (4.54609 litres) is about 20% larger than the US gallon (3.78541 litres) — always check which one a source means.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Grams to ML ---------------- */
+CALCULATORS['grams-to-ml'] = {
+  render(formEl, resultEl) {
+    const DENSITIES = {
+      water: { label: 'Water', d: 1.00 },
+      milk: { label: 'Milk', d: 1.03 },
+      flour: { label: 'Plain flour', d: 0.53 },
+      sugar: { label: 'Granulated sugar', d: 0.85 },
+      oil: { label: 'Vegetable oil', d: 0.92 },
+      honey: { label: 'Honey', d: 1.42 },
+      butter: { label: 'Melted butter', d: 0.91 },
+    };
+    formEl.innerHTML = `
+      <h3>Convert grams to ml</h3>
+      <div class="field"><label>Grams</label><input type="number" id="gtm-val" value="100" step="1"></div>
+      <div class="field"><label>Ingredient (density)</label>
+        <select id="gtm-density">${Object.entries(DENSITIES).map(([k, v]) => `<option value="${k}" ${k === 'water' ? 'selected' : ''}>${v.label} (${v.d} g/ml)</option>`).join('')}</select>
+      </div>`;
+    function calc() {
+      const g = +qs(formEl, '#gtm-val').value || 0;
+      const key = qs(formEl, '#gtm-density').value;
+      const density = DENSITIES[key].d;
+      if (!g) { resultEl.innerHTML = emptyResult('Enter a weight in grams'); return; }
+      const ml = g / density;
+      resultEl.innerHTML = heroBlock(`${fmtNum(g, 1)}g ${DENSITIES[key].label.toLowerCase()} =`, `${fmtNum(ml, 1)} ml`) +
+        `<div class="result-rows">${resultRow('Density used', `${density} g/ml`)}${resultRow('If pure water instead', `${fmtNum(g, 1)} ml`)}</div>` +
+        infoNote('Grams and millilitres are only directly interchangeable for water. For other ingredients, the conversion depends on density — pick the closest match above.');
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
 /* ---------------- School year checker ---------------- */
 CALCULATORS['school-year-checker'] = {
   render(formEl, resultEl) {

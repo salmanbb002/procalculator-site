@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="Science Calculators UK · Pro Calculator UK">
 <meta name="twitter:description" content="Science and unit conversion calculators for physics, chemistry and electronics — for coursework, DIY and everyday cross-unit conversions.">
 <script type="application/ld+json" id="ld-breadcrumb">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://procalculator.site/"},{"@type":"ListItem","position":2,"name":"All Calculators","item":"https://procalculator.site/calculators"},{"@type":"ListItem","position":3,"name":"Science Calculators","item":"https://procalculator.site/calculators/science"}]}</script>
-<script type="application/ld+json" id="ld-faq">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Why does the UK use both metric and imperial units?","acceptedAnswer":{"@type":"Answer","text":"The UK officially adopted the metric system decades ago for most contexts (science, most retail), but imperial units (miles, pints, feet and inches for height) remain in everyday and legal use in specific areas \u2014 road distances and speed limits are a well-known example."}}]}</script>
+<script type="application/ld+json" id="ld-faq">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Why does the UK use both metric and imperial units?","acceptedAnswer":{"@type":"Answer","text":"The UK officially adopted the metric system decades ago for most contexts (science, most retail), but imperial units (miles, pints, feet and inches for height) remain in everyday and legal use in specific areas \u2014 road distances and speed limits are a well-known example."}},{"@type":"Question","name":"What's the difference between mass and weight in these calculators?","acceptedAnswer":{"@type":"Answer","text":"Mass (kg) is the amount of matter in an object and stays constant; weight is the force gravity exerts on that mass and technically varies with gravity. Everyday UK usage treats \"weight\" in kg or stone as mass, which these calculators follow, since that's how the terms are used in practice."}},{"@type":"Question","name":"Are the physics formulas here exam-board accurate?","acceptedAnswer":{"@type":"Answer","text":"The calculators use standard SI-unit physics formulas (e.g. moment = force \u00d7 distance, escape velocity from mass and radius) that match GCSE and A-level specifications, but always check units and significant figures against your specific exam board's formula sheet before quoting a result in coursework."}}]}</script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
 <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
@@ -84,7 +84,7 @@
     <div class="container prose" style="max-width:800px;padding-bottom:0">
       <p>The UK famously mixes metric and imperial units in everyday life — recipes in grams, human height in feet and inches, fuel efficiency in miles per gallon — which makes reliable unit conversion a genuinely useful everyday tool, not just a science-class exercise. Getting a conversion factor slightly wrong compounds fast in anything from a recipe to a construction measurement.</p>
       <p>This category is built to be a fast, accurate reference for the length, mass, volume and other unit conversions that come up constantly, whichever direction you need to go.</p>
-      
+      <p>Beyond conversions, several tools here cover core physics and chemistry formulas — wave frequency, escape velocity, moment of force, dilution using C1V1=C2V2 — using SI units alongside the everyday units UK students and hobbyists actually encounter, so the working is easy to check against a textbook or exam board formula sheet.</p>
     </div>
   </section>
 
@@ -103,8 +103,111 @@
         </div>
         <div class="chip-row" data-chip-row></div>
       </div>
-      <p class="results-meta" data-results-meta></p>
-      <div class="grid grid-4" data-tool-grid></div>
+      <p class="results-meta" data-results-meta>Showing 12 of 12 calculators</p>
+      <div class="grid grid-4" data-tool-grid>
+        <a class="card card-link tool-card" href="/calculator/unit-converter">
+          <div class="top-row"><div class="tool-icon">🔁</div><span class="badge badge-new">New</span></div>
+          <div><span class="cat-tag">Science</span><h3>Unit Converter</h3><p>Convert length, weight and temperature between metric and imperial.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/lbs-to-stone">
+          <div class="top-row"><div class="tool-icon">⚖️</div><span class="badge badge-new">New</span></div>
+          <div><span class="cat-tag">Science</span><h3>Pounds (lbs) to Stone Calculator</h3><p>Convert pounds to stone and pounds, or stone and pounds back to lbs, instantly.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/kg-to-stone">
+          <div class="top-row"><div class="tool-icon">🏋️</div><span class="badge badge-new">New</span></div>
+          <div><span class="cat-tag">Science</span><h3>KG to Stone Calculator</h3><p>Convert kilograms to stone and pounds, including decimal kg values.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/pints-to-ml">
+          <div class="top-row"><div class="tool-icon">🍺</div><span class="badge badge-new">New</span></div>
+          <div><span class="cat-tag">Science</span><h3>Pints to ML Calculator</h3><p>Convert pints to millilitres — UK/imperial pint or US pint.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/litres-to-gallons">
+          <div class="top-row"><div class="tool-icon">🛢️</div><span class="badge badge-new">New</span></div>
+          <div><span class="cat-tag">Science</span><h3>Litres to Gallons Calculator</h3><p>Convert litres to UK (imperial) gallons and US gallons side by side.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/grams-to-ml">
+          <div class="top-row"><div class="tool-icon">🥄</div><span class="badge badge-new">New</span></div>
+          <div><span class="cat-tag">Science</span><h3>Grams to ML Calculator</h3><p>Convert grams to millilitres by ingredient density — water, flour, milk, sugar and more.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/earth-curvature">
+          <div class="top-row"><div class="tool-icon">🌍</div></div>
+          <div><span class="cat-tag">Science</span><h3>Earth Curvature Calculator</h3><p>Calculate how much the Earth curves over a given distance.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/wavelength-frequency">
+          <div class="top-row"><div class="tool-icon">〰️</div></div>
+          <div><span class="cat-tag">Science</span><h3>Wavelength & Frequency Calculator</h3><p>Convert between wavelength and frequency for any wave.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/resistor-color-code">
+          <div class="top-row"><div class="tool-icon">🎛️</div></div>
+          <div><span class="cat-tag">Science</span><h3>Resistor Colour Code Calculator</h3><p>Decode resistor colour bands into resistance values.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/dilution-calculator">
+          <div class="top-row"><div class="tool-icon">🧪</div></div>
+          <div><span class="cat-tag">Science</span><h3>Dilution Calculator (C1V1=C2V2)</h3><p>Work out dilution volumes for a target concentration.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/moment-of-force">
+          <div class="top-row"><div class="tool-icon">🔧</div></div>
+          <div><span class="cat-tag">Science</span><h3>Moment of Force Calculator</h3><p>Calculate the turning moment of a force about a pivot.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/escape-velocity">
+          <div class="top-row"><div class="tool-icon">🚀</div></div>
+          <div><span class="cat-tag">Science</span><h3>Escape Velocity Calculator</h3><p>Calculate escape velocity for a given mass and radius.</p></div>
+        </a>
+        </div><span class="badge badge-new">New</span></div>
+          <div><span class="cat-tag">Science</span><h3>Unit Converter</h3><p>Convert length, weight and temperature between metric and imperial.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/earth-curvature">
+          <div class="top-row"><div class="tool-icon">🌍</div></div>
+          <div><span class="cat-tag">Science</span><h3>Earth Curvature Calculator</h3><p>Calculate how much the Earth curves over a given distance.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/wavelength-frequency">
+          <div class="top-row"><div class="tool-icon">〰️</div></div>
+          <div><span class="cat-tag">Science</span><h3>Wavelength & Frequency Calculator</h3><p>Convert between wavelength and frequency for any wave.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/resistor-color-code">
+          <div class="top-row"><div class="tool-icon">🎛️</div></div>
+          <div><span class="cat-tag">Science</span><h3>Resistor Colour Code Calculator</h3><p>Decode resistor colour bands into resistance values.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/dilution-calculator">
+          <div class="top-row"><div class="tool-icon">🧪</div></div>
+          <div><span class="cat-tag">Science</span><h3>Dilution Calculator (C1V1=C2V2)</h3><p>Work out dilution volumes for a target concentration.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/moment-of-force">
+          <div class="top-row"><div class="tool-icon">🔧</div></div>
+          <div><span class="cat-tag">Science</span><h3>Moment of Force Calculator</h3><p>Calculate the turning moment of a force about a pivot.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/escape-velocity">
+          <div class="top-row"><div class="tool-icon">🚀</div></div>
+          <div><span class="cat-tag">Science</span><h3>Escape Velocity Calculator</h3><p>Calculate escape velocity for a given mass and radius.</p></div>
+        </a>
+        </div><span class="badge badge-new">New</span></div>
+          <div><span class="cat-tag">Science</span><h3>Unit Converter</h3><p>Convert length, weight and temperature between metric and imperial.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/earth-curvature">
+          <div class="top-row"><div class="tool-icon">🌍</div></div>
+          <div><span class="cat-tag">Science</span><h3>Earth Curvature Calculator</h3><p>Calculate how much the Earth curves over a given distance.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/wavelength-frequency">
+          <div class="top-row"><div class="tool-icon">〰️</div></div>
+          <div><span class="cat-tag">Science</span><h3>Wavelength & Frequency Calculator</h3><p>Convert between wavelength and frequency for any wave.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/resistor-color-code">
+          <div class="top-row"><div class="tool-icon">🎛️</div></div>
+          <div><span class="cat-tag">Science</span><h3>Resistor Colour Code Calculator</h3><p>Decode resistor colour bands into resistance values.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/dilution-calculator">
+          <div class="top-row"><div class="tool-icon">🧪</div></div>
+          <div><span class="cat-tag">Science</span><h3>Dilution Calculator (C1V1=C2V2)</h3><p>Work out dilution volumes for a target concentration.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/moment-of-force">
+          <div class="top-row"><div class="tool-icon">🔧</div></div>
+          <div><span class="cat-tag">Science</span><h3>Moment of Force Calculator</h3><p>Calculate the turning moment of a force about a pivot.</p></div>
+        </a>
+        <a class="card card-link tool-card" href="/calculator/escape-velocity">
+          <div class="top-row"><div class="tool-icon">🚀</div></div>
+          <div><span class="cat-tag">Science</span><h3>Escape Velocity Calculator</h3><p>Calculate escape velocity for a given mass and radius.</p></div>
+        </a>
+        </div>
       <div class="empty-state" data-empty-state style="display:none">
         <div class="emoji">🤷</div>
         <p>No calculators matched your search. Try a different keyword or category.</p>
@@ -117,6 +220,14 @@
         <div class="contact-info-item">
           <h4>Why does the UK use both metric and imperial units?</h4>
           <p>The UK officially adopted the metric system decades ago for most contexts (science, most retail), but imperial units (miles, pints, feet and inches for height) remain in everyday and legal use in specific areas — road distances and speed limits are a well-known example.</p>
+        </div>
+        <div class="contact-info-item">
+          <h4>What's the difference between mass and weight in these calculators?</h4>
+          <p>Mass (kg) is the amount of matter in an object and stays constant; weight is the force gravity exerts on that mass and technically varies with gravity. Everyday UK usage treats "weight" in kg or stone as mass, which these calculators follow, since that's how the terms are used in practice.</p>
+        </div>
+        <div class="contact-info-item">
+          <h4>Are the physics formulas here exam-board accurate?</h4>
+          <p>The calculators use standard SI-unit physics formulas (e.g. moment = force × distance, escape velocity from mass and radius) that match GCSE and A-level specifications, but always check units and significant figures against your specific exam board's formula sheet before quoting a result in coursework.</p>
         </div>
     </div>
   </section>
