@@ -422,6 +422,22 @@ input,select,textarea{font-family:inherit}
 }
 .back-to-top.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 
+.whatsapp-float{
+  position:fixed;bottom:26px;left:26px;z-index:40;height:54px;padding:0 20px 0 16px;border-radius:var(--radius-pill);
+  background:#25D366;color:#fff;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -6px rgba(37,211,102,.55);
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.whatsapp-float:hover{transform:translateY(-2px);box-shadow:0 14px 30px -6px rgba(37,211,102,.65)}
+.whatsapp-float svg{flex:none}
+.whatsapp-float-label{font-weight:700;font-size:.9rem;white-space:nowrap}
+@media (max-width:640px){
+  .whatsapp-float{height:52px;padding:0 14px 0 14px;gap:0}
+  .whatsapp-float-label{display:none}
+}
+
+.whatsapp-link{display:inline-flex;align-items:center;gap:8px;color:#25D366;font-weight:700}
+.contact-info-item a.whatsapp-link:hover{color:#1ebe59}
+
 /* ---------- breadcrumb ---------- */
 .breadcrumb{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--text-faint);margin-bottom:18px;flex-wrap:wrap}
 .breadcrumb a:hover{color:var(--primary)}
