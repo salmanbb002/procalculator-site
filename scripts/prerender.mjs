@@ -77,11 +77,32 @@ function newItemHtml(t) {
       </a>`;
 }
 
-// --- inject helper: replace the inner content of a `data-x` attributed element ---
+// Replace a data-attributed div's complete inner HTML. A non-greedy regex is
+// unsafe here because every card contains nested divs; repeated prerenders
+// would stop at the first child closing tag and leave duplicate card markup.
 function injectInto(html, attr, innerHtml) {
-  const re = new RegExp(`(<div class="[^"]*"\\s+${attr}(?:="[^"]*")?[^>]*>)([\\s\\S]*?)(</div>)`);
-  if (!re.test(html)) throw new Error(`Could not find container for ${attr}`);
-  return html.replace(re, (_m, open, _inner, close) => `${open}${innerHtml}\n        ${close}`);
+  const openRe = new RegExp(`<div\\b[^>]*\\b${attr}(?:="[^"]*")?[^>]*>`, 'i');
+  const openMatch = openRe.exec(html);
+  if (!openMatch) throw new Error(`Could not find container for ${attr}`);
+
+  const contentStart = openMatch.index + openMatch[0].length;
+  const divTagRe = /<\/?div\b[^>]*>/gi;
+  divTagRe.lastIndex = contentStart;
+  let depth = 1;
+  let closingStart = -1;
+  let match;
+
+  while ((match = divTagRe.exec(html))) {
+    if (/^<\/div/i.test(match[0])) depth -= 1;
+    else depth += 1;
+    if (depth === 0) {
+      closingStart = match.index;
+      break;
+    }
+  }
+
+  if (closingStart < 0) throw new Error(`Could not find closing div for ${attr}`);
+  return `${html.slice(0, contentStart)}${innerHtml}\n        ${html.slice(closingStart)}`;
 }
 
 function writeFile(relPath, html) {
