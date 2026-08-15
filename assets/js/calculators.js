@@ -798,6 +798,309 @@ CALCULATORS['grams-to-ml'] = {
   }
 };
 
+/* ---------------- KG to Lbs ---------------- */
+CALCULATORS['kg-to-lbs'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert weight</h3>
+      <div class="seg" data-seg="dir"><button data-value="kg" class="active">KG → Pounds</button><button data-value="lb">Pounds → KG</button></div>
+      <div class="field" style="margin-top:16px" data-group="kg">
+        <label>Weight (kg)</label>
+        <input type="number" id="ktl-kg" value="70" step="0.1">
+      </div>
+      <div class="field" data-group="lb" style="display:none">
+        <label>Weight (lb)</label>
+        <input type="number" id="ktl-lb" value="154" step="0.1">
+      </div>`;
+    let dir = 'kg';
+    segControl(formEl, 'dir', v => {
+      dir = v;
+      formEl.querySelector('[data-group="kg"]').style.display = v === 'kg' ? '' : 'none';
+      formEl.querySelector('[data-group="lb"]').style.display = v === 'lb' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      if (dir === 'kg') {
+        const kg = +qs(formEl, '#ktl-kg').value || 0;
+        if (!kg) { resultEl.innerHTML = emptyResult('Enter a weight in kilograms'); return; }
+        const lb = kg * 2.2046226218;
+        resultEl.innerHTML = heroBlock(`${fmtNum(kg, 1)} kg =`, `${fmtNum(lb, 2)} lb`, `${fmtNum(lb / 14, 3)} stone`) +
+          `<div class="result-rows">${resultRow('In stone & pounds', `${Math.floor(lb / 14)}st ${fmtNum(lb - Math.floor(lb / 14) * 14, 1)}lb`)}${resultRow('In ounces', `${fmtNum(lb * 16, 1)} oz`)}</div>` +
+          infoNote('1 kilogram = 2.20462 pounds exactly (2.2046226218 to 10 significant figures).');
+      } else {
+        const lb = +qs(formEl, '#ktl-lb').value || 0;
+        if (!lb) { resultEl.innerHTML = emptyResult('Enter a weight in pounds'); return; }
+        const kg = lb * 0.45359237;
+        resultEl.innerHTML = heroBlock(`${fmtNum(lb, 1)} lb =`, `${fmtNum(kg, 2)} kg`, `${fmtNum(kg / 1000, 4)} tonnes`) +
+          `<div class="result-rows">${resultRow('In grams', `${fmtNum(kg * 1000, 0)} g`)}</div>` +
+          infoNote('1 pound = 0.45359237 kilograms exactly — this is the internationally defined conversion factor.');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- CM to Feet ---------------- */
+CALCULATORS['cm-to-feet'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert height / length</h3>
+      <div class="seg" data-seg="dir"><button data-value="cm" class="active">CM → Feet &amp; Inches</button><button data-value="ft">Feet &amp; Inches → CM</button></div>
+      <div class="field" style="margin-top:16px" data-group="cm">
+        <label>Centimetres</label>
+        <input type="number" id="ctf-cm" value="175" step="0.1">
+      </div>
+      <div class="field" data-group="ft" style="display:none">
+        <div class="field-row">
+          <div><label>Feet</label><input type="number" id="ctf-ft" value="5" step="1"></div>
+          <div><label>Inches</label><input type="number" id="ctf-in" value="9" step="0.1"></div>
+        </div>
+      </div>`;
+    let dir = 'cm';
+    segControl(formEl, 'dir', v => {
+      dir = v;
+      formEl.querySelector('[data-group="cm"]').style.display = v === 'cm' ? '' : 'none';
+      formEl.querySelector('[data-group="ft"]').style.display = v === 'ft' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      if (dir === 'cm') {
+        const cm = +qs(formEl, '#ctf-cm').value || 0;
+        if (!cm) { resultEl.innerHTML = emptyResult('Enter a height in centimetres'); return; }
+        const totalIn = cm / 2.54;
+        const ft = Math.floor(totalIn / 12);
+        const remIn = totalIn - ft * 12;
+        resultEl.innerHTML = heroBlock(`${fmtNum(cm, 1)} cm =`, `${ft}ft ${fmtNum(remIn, 1)}in`, `${fmtNum(totalIn, 2)} inches total`) +
+          `<div class="result-rows">${resultRow('Total inches', `${fmtNum(totalIn, 2)} in`)}${resultRow('In metres', `${fmtNum(cm / 100, 3)} m`)}</div>` +
+          infoNote('1 foot = 30.48cm exactly (12 inches × 2.54cm).');
+      } else {
+        const ft = +qs(formEl, '#ctf-ft').value || 0, inch = +qs(formEl, '#ctf-in').value || 0;
+        const totalCm = (ft * 12 + inch) * 2.54;
+        if (!totalCm) { resultEl.innerHTML = emptyResult('Enter a feet and inches value'); return; }
+        resultEl.innerHTML = heroBlock(`${ft}ft ${fmtNum(inch, 1)}in =`, `${fmtNum(totalCm, 1)} cm`, `${fmtNum(totalCm / 100, 3)} m`) +
+          `<div class="result-rows">${resultRow('In metres', `${fmtNum(totalCm / 100, 3)} m`)}</div>` +
+          infoNote('1 foot = 30.48cm exactly (12 inches × 2.54cm).');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- CM to Inches ---------------- */
+CALCULATORS['cm-to-inches'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert length</h3>
+      <div class="seg" data-seg="dir"><button data-value="cm" class="active">CM → Inches</button><button data-value="in">Inches → CM</button></div>
+      <div class="field" style="margin-top:16px" data-group="cm">
+        <label>Centimetres</label>
+        <input type="number" id="cti-cm" value="30" step="0.1">
+      </div>
+      <div class="field" data-group="in" style="display:none">
+        <label>Inches</label>
+        <input type="number" id="cti-in" value="12" step="0.1">
+      </div>`;
+    let dir = 'cm';
+    segControl(formEl, 'dir', v => {
+      dir = v;
+      formEl.querySelector('[data-group="cm"]').style.display = v === 'cm' ? '' : 'none';
+      formEl.querySelector('[data-group="in"]').style.display = v === 'in' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      if (dir === 'cm') {
+        const cm = +qs(formEl, '#cti-cm').value || 0;
+        if (!cm) { resultEl.innerHTML = emptyResult('Enter a length in centimetres'); return; }
+        const inch = cm / 2.54;
+        resultEl.innerHTML = heroBlock(`${fmtNum(cm, 1)} cm =`, `${fmtNum(inch, 3)} in`, `${fmtNum(inch / 12, 2)} feet`) +
+          `<div class="result-rows">${resultRow('In feet', `${fmtNum(inch / 12, 3)} ft`)}${resultRow('In millimetres', `${fmtNum(cm * 10, 1)} mm`)}</div>` +
+          infoNote('1 inch = 2.54cm exactly — the internationally agreed conversion factor since 1959.');
+      } else {
+        const inch = +qs(formEl, '#cti-in').value || 0;
+        if (!inch) { resultEl.innerHTML = emptyResult('Enter a length in inches'); return; }
+        const cm = inch * 2.54;
+        resultEl.innerHTML = heroBlock(`${fmtNum(inch, 2)} in =`, `${fmtNum(cm, 2)} cm`, `${fmtNum(cm / 100, 3)} m`) +
+          `<div class="result-rows">${resultRow('In millimetres', `${fmtNum(cm * 10, 1)} mm`)}</div>` +
+          infoNote('1 inch = 2.54cm exactly — the internationally agreed conversion factor since 1959.');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Fahrenheit to Celsius ---------------- */
+CALCULATORS['fahrenheit-to-celsius'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert temperature</h3>
+      <div class="seg" data-seg="dir"><button data-value="f" class="active">°F → °C</button><button data-value="c">°C → °F</button></div>
+      <div class="field" style="margin-top:16px" data-group="f">
+        <label>Fahrenheit (°F)</label>
+        <input type="number" id="ftc-f" value="98.6" step="0.1">
+      </div>
+      <div class="field" data-group="c" style="display:none">
+        <label>Celsius (°C)</label>
+        <input type="number" id="ftc-c" value="37" step="0.1">
+      </div>`;
+    let dir = 'f';
+    segControl(formEl, 'dir', v => {
+      dir = v;
+      formEl.querySelector('[data-group="f"]').style.display = v === 'f' ? '' : 'none';
+      formEl.querySelector('[data-group="c"]').style.display = v === 'c' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      if (dir === 'f') {
+        const f = formEl.querySelector('#ftc-f').value;
+        if (f === '') { resultEl.innerHTML = emptyResult('Enter a temperature in Fahrenheit'); return; }
+        const c = (+f - 32) * 5 / 9;
+        resultEl.innerHTML = heroBlock(`${fmtNum(+f, 1)}°F =`, `${fmtNum(c, 1)}°C`, `${fmtNum(c + 273.15, 1)} K`) +
+          `<div class="result-rows">${resultRow('In Kelvin', `${fmtNum(c + 273.15, 2)} K`)}</div>` +
+          infoNote('°C = (°F − 32) × 5⁄9. Body temperature 98.6°F = 37°C exactly.');
+      } else {
+        const c = formEl.querySelector('#ftc-c').value;
+        if (c === '') { resultEl.innerHTML = emptyResult('Enter a temperature in Celsius'); return; }
+        const f = (+c * 9 / 5) + 32;
+        resultEl.innerHTML = heroBlock(`${fmtNum(+c, 1)}°C =`, `${fmtNum(f, 1)}°F`, `${fmtNum(+c + 273.15, 1)} K`) +
+          `<div class="result-rows">${resultRow('In Kelvin', `${fmtNum(+c + 273.15, 2)} K`)}</div>` +
+          infoNote('°F = (°C × 9⁄5) + 32. Water freezes at 0°C/32°F and boils at 100°C/212°F.');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- KM to Miles ---------------- */
+CALCULATORS['km-to-miles'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert distance</h3>
+      <div class="seg" data-seg="dir"><button data-value="km" class="active">KM → Miles</button><button data-value="mi">Miles → KM</button></div>
+      <div class="field" style="margin-top:16px" data-group="km">
+        <label>Kilometres</label>
+        <input type="number" id="ktm-km" value="10" step="0.1">
+      </div>
+      <div class="field" data-group="mi" style="display:none">
+        <label>Miles</label>
+        <input type="number" id="ktm-mi" value="6.2" step="0.1">
+      </div>`;
+    let dir = 'km';
+    segControl(formEl, 'dir', v => {
+      dir = v;
+      formEl.querySelector('[data-group="km"]').style.display = v === 'km' ? '' : 'none';
+      formEl.querySelector('[data-group="mi"]').style.display = v === 'mi' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      if (dir === 'km') {
+        const km = +qs(formEl, '#ktm-km').value || 0;
+        if (!km) { resultEl.innerHTML = emptyResult('Enter a distance in kilometres'); return; }
+        const mi = km / 1.609344;
+        resultEl.innerHTML = heroBlock(`${fmtNum(km, 2)} km =`, `${fmtNum(mi, 3)} miles`, `${fmtNum(km * 1000, 0)} m`) +
+          `<div class="result-rows">${resultRow('In metres', `${fmtNum(km * 1000, 0)} m`)}${resultRow('In yards', `${fmtNum(mi * 1760, 0)} yd`)}</div>` +
+          infoNote('1 mile = 1.609344km exactly — the UK statute mile, fixed by international agreement in 1959.');
+      } else {
+        const mi = +qs(formEl, '#ktm-mi').value || 0;
+        if (!mi) { resultEl.innerHTML = emptyResult('Enter a distance in miles'); return; }
+        const km = mi * 1.609344;
+        resultEl.innerHTML = heroBlock(`${fmtNum(mi, 2)} miles =`, `${fmtNum(km, 3)} km`, `${fmtNum(km * 1000, 0)} m`) +
+          `<div class="result-rows">${resultRow('In yards', `${fmtNum(mi * 1760, 0)} yd`)}</div>` +
+          infoNote('1 mile = 1.609344km exactly — the UK statute mile, fixed by international agreement in 1959.');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Inch to MM ---------------- */
+CALCULATORS['inch-to-mm'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert length</h3>
+      <div class="seg" data-seg="dir"><button data-value="in" class="active">Inches → MM</button><button data-value="mm">MM → Inches</button></div>
+      <div class="field" style="margin-top:16px" data-group="in">
+        <label>Inches</label>
+        <input type="number" id="itm-in" value="1" step="0.0625">
+      </div>
+      <div class="field" data-group="mm" style="display:none">
+        <label>Millimetres</label>
+        <input type="number" id="itm-mm" value="25.4" step="0.1">
+      </div>`;
+    let dir = 'in';
+    segControl(formEl, 'dir', v => {
+      dir = v;
+      formEl.querySelector('[data-group="in"]').style.display = v === 'in' ? '' : 'none';
+      formEl.querySelector('[data-group="mm"]').style.display = v === 'mm' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      if (dir === 'in') {
+        const inch = +qs(formEl, '#itm-in').value || 0;
+        if (!inch) { resultEl.innerHTML = emptyResult('Enter a length in inches'); return; }
+        const mm = inch * 25.4;
+        resultEl.innerHTML = heroBlock(`${fmtNum(inch, 4)} in =`, `${fmtNum(mm, 2)} mm`, `${fmtNum(mm / 10, 3)} cm`) +
+          `<div class="result-rows">${resultRow('In centimetres', `${fmtNum(mm / 10, 3)} cm`)}</div>` +
+          infoNote('1 inch = 25.4mm exactly — the internationally agreed conversion factor since 1959.');
+      } else {
+        const mm = +qs(formEl, '#itm-mm').value || 0;
+        if (!mm) { resultEl.innerHTML = emptyResult('Enter a length in millimetres'); return; }
+        const inch = mm / 25.4;
+        resultEl.innerHTML = heroBlock(`${fmtNum(mm, 2)} mm =`, `${fmtNum(inch, 4)} in`, `${fmtNum(inch, 4)} in`) +
+          `<div class="result-rows">${resultRow('As a fraction (nearest 1/16")', `${fmtNum(Math.round(inch * 16) / 16, 4)} in`)}</div>` +
+          infoNote('1 inch = 25.4mm exactly — the internationally agreed conversion factor since 1959.');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
+/* ---------------- Stone to KG ---------------- */
+CALCULATORS['stone-to-kg'] = {
+  render(formEl, resultEl) {
+    formEl.innerHTML = `
+      <h3>Convert weight</h3>
+      <div class="seg" data-seg="dir"><button data-value="st" class="active">Stone + lb → KG</button><button data-value="kg">KG → Stone + lb</button></div>
+      <div class="field" style="margin-top:16px" data-group="st">
+        <div class="field-row">
+          <div><label>Stone</label><input type="number" id="stk-st" value="11" step="1"></div>
+          <div><label>Pounds</label><input type="number" id="stk-lb" value="0" step="0.1"></div>
+        </div>
+      </div>
+      <div class="field" data-group="kg" style="display:none">
+        <label>Weight (kg)</label>
+        <input type="number" id="stk-kg" value="70" step="0.1">
+      </div>`;
+    let dir = 'st';
+    segControl(formEl, 'dir', v => {
+      dir = v;
+      formEl.querySelector('[data-group="st"]').style.display = v === 'st' ? '' : 'none';
+      formEl.querySelector('[data-group="kg"]').style.display = v === 'kg' ? '' : 'none';
+      calc();
+    });
+    function calc() {
+      if (dir === 'st') {
+        const st = +qs(formEl, '#stk-st').value || 0, lb = +qs(formEl, '#stk-lb').value || 0;
+        const totalLb = st * 14 + lb;
+        if (!totalLb) { resultEl.innerHTML = emptyResult('Enter a stone and pound value'); return; }
+        const kg = totalLb * 0.45359237;
+        resultEl.innerHTML = heroBlock(`${st}st ${fmtNum(lb, 1)}lb =`, `${fmtNum(kg, 2)} kg`, `${fmtNum(totalLb, 1)} lb`) +
+          `<div class="result-rows">${resultRow('In pounds', `${fmtNum(totalLb, 1)} lb`)}</div>` +
+          infoNote('1 stone = 14 pounds exactly; 1 pound = 0.45359237kg exactly.');
+      } else {
+        const kg = +qs(formEl, '#stk-kg').value || 0;
+        if (!kg) { resultEl.innerHTML = emptyResult('Enter a weight in kilograms'); return; }
+        const lb = kg / 0.45359237;
+        const stone = Math.floor(lb / 14);
+        const remLb = lb - stone * 14;
+        resultEl.innerHTML = heroBlock(`${fmtNum(kg, 1)} kg =`, `${stone}st ${fmtNum(remLb, 1)}lb`, `${fmtNum(lb / 14, 3)} stone`) +
+          `<div class="result-rows">${resultRow('In pounds', `${fmtNum(lb, 1)} lb`)}</div>` +
+          infoNote('1 stone = 14 pounds exactly; 1 pound = 0.45359237kg exactly.');
+      }
+    }
+    wireLiveCalc(formEl, calc);
+  }
+};
+
 /* ---------------- School year checker ---------------- */
 CALCULATORS['school-year-checker'] = {
   render(formEl, resultEl) {
